@@ -5,13 +5,13 @@ Exocortex reasoning engine for AI agents. Multi-provider LLM gateway with reason
 ## Install
 
 ```bash
-uv tool install git+https://github.com/deinfinite/brain-cli.git
+uv tool install git+https://github.com/sl-build/brain-cli.git
 ```
 
 Or from source:
 
 ```bash
-git clone https://github.com/deinfinite/brain-cli.git
+git clone https://github.com/sl-build/brain-cli.git
 cd brain-cli
 uv tool install --editable .
 ```
