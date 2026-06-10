@@ -1,4 +1,5 @@
-# Brain CLI
+# WARNING this project is extreme alpha version. Can break you Hermes because of hooks usage. 
+# Brain CLI 
 
 Exocortex reasoning engine for AI agents. Multi-provider LLM gateway with reasoning profiles, depth control, structured output, and plan persistence for Hermes Agent Gate.
 
