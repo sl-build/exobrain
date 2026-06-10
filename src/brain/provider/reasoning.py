@@ -13,10 +13,10 @@ from ..stats import Stats
 
 
 class ReasoningAdapter:
-    """Adapter for the OpenCode Go reasoning endpoint.
+    """Adapter for OpenCode Go reasoning models (Qwen3.7 Max/Plus).
 
     Uses raw httpx (no OpenAI SDK dependency).
-    Follows the OpenAI chat completions wire format.
+    Uses Anthropic Messages API format at /zen/go/v1/messages.
     """
 
     def __init__(self, base_url: str, api_key: str):
@@ -33,19 +33,28 @@ class ReasoningAdapter:
         reasoning_effort: str | None = None,
         retries: int = 3,
     ) -> tuple[str, Stats]:
+        system_prompt: str | None = None
+        user_messages: list[dict] = []
+
+        for msg in messages:
+            if msg["role"] == "system":
+                system_prompt = msg["content"]
+            else:
+                user_messages.append(msg)
+
         body: dict = {
             "model": model,
-            "messages": messages,
+            "messages": user_messages,
         }
+
+        if system_prompt:
+            body["system"] = system_prompt
 
         if max_tokens is not None:
             body["max_tokens"] = max_tokens
 
         if temperature is not None:
             body["temperature"] = temperature
-
-        if reasoning_effort is not None:
-            body["reasoning_effort"] = reasoning_effort
 
         stats = Stats(model=model)
         start_time = time.monotonic()
@@ -54,10 +63,11 @@ class ReasoningAdapter:
             try:
                 with httpx.Client(timeout=120.0) as hclient:
                     resp = hclient.post(
-                        f"{self._base_url}/chat/completions",
+                        f"{self._base_url}/messages",
                         headers={
-                            "Authorization": f"Bearer {self._api_key}",
+                            "x-api-key": self._api_key,
                             "Content-Type": "application/json",
+                            "anthropic-version": "2023-06-01",
                         },
                         json=body,
                     )
@@ -84,20 +94,26 @@ class ReasoningAdapter:
                 data = resp.json()
 
                 usage = data.get("usage", {})
-                stats.prompt_tokens = usage.get("prompt_tokens", 0) or 0
-                stats.completion_tokens = usage.get("completion_tokens", 0) or 0
-                stats.total_tokens = usage.get("total_tokens", 0) or 0
+                stats.prompt_tokens = usage.get("input_tokens", 0) or 0
+                stats.completion_tokens = usage.get("output_tokens", 0) or 0
+                stats.total_tokens = stats.prompt_tokens + stats.completion_tokens
                 stats.model = data.get("model", model)
 
-                choices = data.get("choices", [])
-                if not choices:
-                    raise BadResponseError("Empty choices from reasoning API")
+                content_items = data.get("content", [])
+                if not content_items:
+                    raise BadResponseError("Empty content from reasoning API")
 
-                content = choices[0].get("message", {}).get("content", "")
-                if not content or not content.strip():
+                text = ""
+                for item in content_items:
+                    if item.get("type") == "text":
+                        text = item.get("text", "")
+                        if text.strip():
+                            break
+
+                if not text or not text.strip():
                     raise BadResponseError("Empty response from model")
 
-                return content.strip()
+                return text.strip()
 
             except (BadResponseError, APIError):
                 raise

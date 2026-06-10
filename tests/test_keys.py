@@ -1,15 +1,12 @@
 """Tests for brain.keys module."""
 
-import os
-
-import pytest
 from brain.keys import (
     PROVIDERS,
     VALID_PROVIDERS,
+    find_key_source,
     get_base_url,
     get_default_model,
     set_api_key,
-    find_key_source,
 )
 
 
@@ -47,6 +44,7 @@ class TestKeyManagement:
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-override")
         monkeypatch.setenv("BRAIN_API_KEY", "sk-generic")
         from brain.keys import get_api_key
+
         key = get_api_key("openrouter")
         assert key == "sk-override"
 
@@ -68,4 +66,4 @@ class TestDefaultModels:
         assert get_default_model("openrouter") == "openai/gpt-5.5"
 
     def test_opencode_go_default(self):
-        assert get_default_model("opencode_go") == "qwen-3.7-max"
+        assert get_default_model("opencode_go") == "qwen3.7-max"

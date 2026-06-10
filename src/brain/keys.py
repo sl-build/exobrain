@@ -26,13 +26,14 @@ PROVIDERS: dict[str, dict] = {
     "opencode_go": {
         "env_var": "OPENCODE_GO_API_KEY",
         "base_url": "https://opencode.ai/zen/go/v1",
-        "default_model": "qwen-3.7-max",
+        "default_model": "qwen3.7-max",
         "key_url": "https://opencode.ai/auth",
         "label": "OpenCode Go",
         "default_adapter": "oa_compat",
         "model_map": {
-            "qwen-3.7-max": "reasoning",
-            "qwen-3.7-pro": "reasoning",
+            "qwen3.7-max": "reasoning",
+            "qwen3.6-plus": "reasoning",
+            "qwen3.5-plus": "reasoning",
         },
     },
 }

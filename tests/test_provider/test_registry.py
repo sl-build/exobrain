@@ -2,8 +2,6 @@
 
 from unittest.mock import patch
 
-import pytest
-
 
 class TestGetAdapter:
     """Adapter resolution by model+provider."""
@@ -29,7 +27,7 @@ class TestGetAdapter:
         from brain.provider import get_adapter
         from brain.provider.reasoning import ReasoningAdapter
 
-        adapter = get_adapter("qwen-3.7-max", "opencode_go")
+        adapter = get_adapter("qwen3.7-max", "opencode_go")
         assert isinstance(adapter, ReasoningAdapter)
 
     def test_opencode_go_qwen_pro_uses_reasoning(self, monkeypatch):
@@ -37,7 +35,7 @@ class TestGetAdapter:
         from brain.provider import get_adapter
         from brain.provider.reasoning import ReasoningAdapter
 
-        adapter = get_adapter("qwen-3.7-pro", "opencode_go")
+        adapter = get_adapter("qwen3.6-plus", "opencode_go")
         assert isinstance(adapter, ReasoningAdapter)
 
 

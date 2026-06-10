@@ -22,9 +22,9 @@ class TestReasoningAdapter:
 
     def test_complete_success(self):
         mock_json = {
-            "choices": [{"message": {"content": "Reasoned answer"}}],
-            "usage": {"prompt_tokens": 10, "completion_tokens": 20, "total_tokens": 30},
-            "model": "qwen-3.7-max",
+            "content": [{"type": "text", "text": "Reasoned answer"}],
+            "usage": {"input_tokens": 10, "output_tokens": 20},
+            "model": "qwen3.7-max",
         }
         mock_response = _make_json_response(200, mock_json)
 
@@ -40,17 +40,17 @@ class TestReasoningAdapter:
             )
             text, stats = adapter.complete(
                 messages=[{"role": "user", "content": "think"}],
-                model="qwen-3.7-max",
+                model="qwen3.7-max",
             )
             assert text == "Reasoned answer"
-            assert stats.model == "qwen-3.7-max"
+            assert stats.model == "qwen3.7-max"
             assert stats.total_tokens == 30
 
     def test_empty_choices_raises(self):
         mock_json = {
-            "choices": [],
-            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-            "model": "qwen-3.7-max",
+            "content": [],
+            "usage": {"input_tokens": 0, "output_tokens": 0},
+            "model": "qwen3.7-max",
         }
         mock_response = _make_json_response(200, mock_json)
 
@@ -65,10 +65,10 @@ class TestReasoningAdapter:
                 base_url="https://opencode.ai/zen/go/v1",
                 api_key="test-key",
             )
-            with pytest.raises(BadResponseError, match="Empty choices"):
+            with pytest.raises(BadResponseError, match="Empty content"):
                 adapter.complete(
                     messages=[{"role": "user", "content": "think"}],
-                    model="qwen-3.7-max",
+                    model="qwen3.7-max",
                 )
 
     def test_server_error_retries_then_raises(self):
@@ -88,7 +88,7 @@ class TestReasoningAdapter:
             with pytest.raises(APIError, match="failed after"):
                 adapter.complete(
                     messages=[{"role": "user", "content": "think"}],
-                    model="qwen-3.7-max",
+                    model="qwen3.7-max",
                     retries=0,
                 )
 
@@ -100,5 +100,5 @@ class TestReasoningAdapter:
             base_url="https://opencode.ai/zen/go/v1",
             api_key="test-key",
         )
-        assert adapter.supports_model("qwen-3.7-max")
+        assert adapter.supports_model("qwen3.7-max")
         assert not adapter.supports_model("gpt-4o")

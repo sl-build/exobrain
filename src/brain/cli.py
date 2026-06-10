@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
+from . import __version__
 from .commands import (
     cmd_config,
     cmd_config_set,
@@ -39,6 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="brain",
         description="Brain CLI v2 — Reasoning engine for agents",
     )
+    parser.add_argument("--version", action="version", version=f"brain {__version__}")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # ── think ──
