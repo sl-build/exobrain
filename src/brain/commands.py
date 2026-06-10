@@ -110,6 +110,12 @@ def cmd_think(
     )
 
     if plan_mode:
+        try:
+            outer = json.loads(response)
+            if isinstance(outer, dict) and "response" in outer:
+                response = outer["response"]
+        except json.JSONDecodeError:
+            pass
         steps = _parse_plan_json(response)
         plan = create_plan(prompt, steps)
         save_plan(plan)
