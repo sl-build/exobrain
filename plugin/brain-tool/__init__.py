@@ -3,15 +3,21 @@
 import json
 import logging
 import subprocess
-import time
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 from . import schemas
 
 logger = logging.getLogger(__name__)
 
-STATE_FILE = Path.home() / ".brain" / "state" / "plan.json"
-ACTION_TOOLS = {"terminal", "write_file", "patch", "file_edit", "edit", "bash", "task"}
+_PLAN_PATH_TEMPLATE = Path.home() / ".brain" / "state"
+_GATED_TOOLS = {"terminal", "write_file", "patch", "file_edit", "edit", "bash", "task"}
+
+
+def _plan_file(session_id: str = "") -> Path:
+    if session_id:
+        return _PLAN_PATH_TEMPLATE / f"plan-{session_id}.json"
+    return _PLAN_PATH_TEMPLATE / "plan.json"
 
 
 def _run_brain(*args: str) -> str:
@@ -25,72 +31,93 @@ def _run_brain(*args: str) -> str:
         output = result.stdout.strip()
         if result.returncode != 0:
             err = result.stderr.strip() or "unknown error"
-            return json.dumps(
-                {"error": f"brain failed (exit {result.returncode}): {err}"}
-            )
+            return json.dumps({"error": f"brain failed (exit {result.returncode}): {err}"})
         return json.dumps({"result": output})
     except FileNotFoundError:
-        return json.dumps(
-            {"error": "brain CLI not installed. Run: uv tool install brain-cli"}
-        )
+        return json.dumps({"error": "brain CLI not installed. Run: uv tool install brain-cli"})
     except subprocess.TimeoutExpired:
         return json.dumps({"error": "brain CLI timed out"})
     except Exception as exc:
         return json.dumps({"error": str(exc)})
 
 
-def brain_think(args: dict, **kwargs) -> str:
+def _read_plan(session_id: str = "") -> Optional[Dict[str, Any]]:
+    plan_path = _plan_file(session_id)
+    if not plan_path.exists():
+        return None
+    try:
+        data = json.loads(plan_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    steps = data.get("steps", [])
+    current = data.get("current_step", 0)
+    if current >= len(steps):
+        return None
+    return data
+
+
+def _handle_brain_think(args: dict, **kwargs) -> str:
     prompt = args.get("prompt", "").strip()
     if not prompt:
         return json.dumps({"error": "No prompt provided"})
-    return _run_brain("think", "--plan", prompt)
+    cmd = ["think", "--plan", prompt]
+    session_id = kwargs.get("session_id", "")
+    if session_id:
+        cmd.extend(["--session-id", session_id])
+    return _run_brain(*cmd)
 
 
-def brain_plan_done(args: dict, **kwargs) -> str:
-    return _run_brain("plan", "done")
+def _handle_plan_done(args: dict, **kwargs) -> str:
+    cmd = ["plan", "done"]
+    session_id = kwargs.get("session_id", "")
+    if session_id:
+        cmd.extend(["--session-id", session_id])
+    return _run_brain(*cmd)
 
 
-def brain_plan_block(args: dict, **kwargs) -> str:
+def _handle_plan_block(args: dict, **kwargs) -> str:
     reason = args.get("reason", "").strip()
+    cmd = ["plan", "block"]
     if reason:
-        return _run_brain("plan", "block", reason)
-    return _run_brain("plan", "block")
+        cmd.append(reason)
+    session_id = kwargs.get("session_id", "")
+    if session_id:
+        cmd.extend(["--session-id", session_id])
+    return _run_brain(*cmd)
 
 
-def _load_gate_state() -> tuple[bool, str]:
-    if not STATE_FILE.exists():
-        return False, "No active plan. Call brain_think to create one."
-    try:
-        data = json.loads(STATE_FILE.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return False, "Plan file is corrupt. Call brain_think to recreate."
-
-    expires_at = data.get("expires_at", 0)
-    if time.time() >= expires_at:
-        return False, "Plan has expired. Call brain_think to create a new one."
-
-    steps = data.get("steps", [])
-    has_active = any(s.get("status") == "in_progress" for s in steps)
-    if not has_active:
-        current = data.get("current_step", 0)
-        if current >= len(steps):
-            return (
-                False,
-                "All plan steps are complete. Call brain_think for the next phase.",
-            )
-        return False, "No in-progress step found. Your plan may need attention."
-
-    return True, ""
+def _handle_plan_status(args: dict, **kwargs) -> str:
+    session_id = kwargs.get("session_id", "")
+    cmd = ["plan"]
+    if session_id:
+        cmd.extend(["--session-id", session_id])
+    return _run_brain(*cmd)
 
 
-def gate_pre_tool_call(tool_name: str, args: dict, task_id: str, **kwargs):
-    if tool_name not in ACTION_TOOLS:
-        return
+def _on_pre_tool_call(
+    tool_name: str, args: dict, task_id: str, **kwargs
+) -> Optional[Dict[str, Any]]:
+    if tool_name not in _GATED_TOOLS:
+        return None
+    session_id = kwargs.get("session_id", "")
+    plan = _read_plan(session_id)
+    if plan is not None:
+        return None
+    return {"action": "block", "message": "⛔ No active plan. Call brain_think to create one."}
 
-    allowed, message = _load_gate_state()
-    if not allowed:
-        logger.info("GATE blocked %s: %s", tool_name, message)
-        return {"action": "block", "message": f"⛔ {message}"}
+
+def _on_post_receive_message(content: str = "", session_id: str = "", **kwargs) -> str:
+    plan = _read_plan(session_id)
+    if plan is None:
+        return ""
+    steps = plan.get("steps", [])
+    current = plan.get("current_step", 0)
+    total = len(steps)
+    if current >= total:
+        return ""
+    current_title = steps[current].get("title", "") if current < total else ""
+    msg = f"🧠 {current + 1}/{total} → {current_title}"
+    return msg[:120]
 
 
 def register(ctx):
@@ -98,18 +125,25 @@ def register(ctx):
         name="brain_think",
         toolset="brain",
         schema=schemas.BRAIN_THINK,
-        handler=brain_think,
+        handler=_handle_brain_think,
     )
     ctx.register_tool(
         name="brain_plan_done",
         toolset="brain",
         schema=schemas.BRAIN_PLAN_DONE,
-        handler=brain_plan_done,
+        handler=_handle_plan_done,
     )
     ctx.register_tool(
         name="brain_plan_block",
         toolset="brain",
         schema=schemas.BRAIN_PLAN_BLOCK,
-        handler=brain_plan_block,
+        handler=_handle_plan_block,
     )
-    ctx.register_hook("pre_tool_call", gate_pre_tool_call)
+    ctx.register_tool(
+        name="brain_plan_status",
+        toolset="brain",
+        schema=schemas.BRAIN_PLAN_STATUS,
+        handler=_handle_plan_status,
+    )
+    ctx.register_hook("pre_tool_call", _on_pre_tool_call)
+    ctx.register_hook("post_receive_message", _on_post_receive_message)

@@ -64,6 +64,7 @@ def cmd_think(
     raw_model: bool = False,
     plan_mode: bool = False,
     force: bool = False,
+    session_id: str = "",
 ) -> str:
     """Handle the 'think' subcommand."""
     if plan_mode and force:
@@ -117,13 +118,13 @@ def cmd_think(
         except json.JSONDecodeError:
             pass
         steps = _parse_plan_json(response)
-        plan = create_plan(prompt, steps)
+        plan = create_plan(prompt, steps, session_id)
         save_plan(plan)
         print("\n--- Plan saved ---")
         _print_plan(plan)
     elif force:
-        delete_plan()
-        plan = create_plan(prompt, [response.strip()])
+        delete_plan(session_id)
+        plan = create_plan(prompt, [response.strip()], session_id)
         save_plan(plan)
         print("\n--- Plan overwritten (force) ---")
         _print_plan(plan)
@@ -142,8 +143,8 @@ def _print_plan(plan) -> None:
         print("  ✓ All steps complete")
 
 
-def cmd_plan() -> str:
-    plan = load_plan()
+def cmd_plan(session_id: str = "") -> str:
+    plan = load_plan(session_id)
     if plan is None:
         print("No active plan.")
         return "No active plan."
@@ -151,22 +152,22 @@ def cmd_plan() -> str:
     return ""
 
 
-def cmd_plan_done() -> str:
-    plan = mark_done()
+def cmd_plan_done(session_id: str = "") -> str:
+    plan = mark_done(session_id)
     if plan is None:
         print("No active plan to mark done.")
         return "No active plan."
     if plan.current_step >= len(plan.steps):
         print("All steps complete.")
-        delete_plan()
+        delete_plan(session_id)
     else:
         next_step = plan.steps[plan.current_step]
         print(f"Step done. Next: {next_step.title}")
     return ""
 
 
-def cmd_plan_block(reason: str | None = None) -> str:
-    plan = mark_blocked(reason or "")
+def cmd_plan_block(reason: str | None = None, session_id: str = "") -> str:
+    plan = mark_blocked(reason or "", session_id)
     if plan is None:
         print("No active plan to block.")
         return "No active plan."

@@ -16,6 +16,10 @@ BRAIN_THINK = {
                 "type": "string",
                 "description": "The goal or task to plan for. Be specific.",
             },
+            "session_id": {
+                "type": "string",
+                "description": "Session ID for plan isolation across threads.",
+            },
         },
         "required": ["prompt"],
     },
@@ -30,7 +34,12 @@ BRAIN_PLAN_DONE = {
     ),
     "parameters": {
         "type": "object",
-        "properties": {},
+        "properties": {
+            "session_id": {
+                "type": "string",
+                "description": "Session ID for plan isolation across threads.",
+            },
+        },
     },
 }
 
@@ -46,6 +55,26 @@ BRAIN_PLAN_BLOCK = {
             "reason": {
                 "type": "string",
                 "description": "Why is this step blocked?",
+            },
+            "session_id": {
+                "type": "string",
+                "description": "Session ID for plan isolation across threads.",
+            },
+        },
+    },
+}
+
+BRAIN_PLAN_STATUS = {
+    "name": "brain_plan_status",
+    "description": (
+        "Show the current plan status. Returns step progress, current step title, and total steps."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "session_id": {
+                "type": "string",
+                "description": "Session ID for plan isolation across threads.",
             },
         },
     },

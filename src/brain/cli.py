@@ -44,11 +44,13 @@ def build_parser() -> argparse.ArgumentParser:
         description="Brain CLI v2 — Reasoning engine for agents",
     )
     parser.add_argument("--version", action="version", version=f"brain {__version__}")
+    parser.add_argument("--session-id", default="", help="Session ID for plan isolation")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # ── think ──
     think_parser = subparsers.add_parser("think", help="Send a prompt to the reasoning engine")
     think_parser.add_argument("prompt", help="The prompt/question to think about")
+    think_parser.add_argument("--session-id", default="", help="Session ID for plan isolation")
     think_parser.add_argument(
         "--provider", choices=VALID_PROVIDERS, help="Provider: openrouter|opencode_go"
     )
@@ -107,6 +109,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # ── plan ──
     plan_parser = subparsers.add_parser("plan", help="Show current plan")
+    plan_parser.add_argument("--session-id", default="", help="Session ID for plan isolation")
     plan_sub = plan_parser.add_subparsers(dest="plan_action")
 
     plan_sub.add_parser("done", help="Mark current step as done")
@@ -185,16 +188,17 @@ def main(argv: list[str] | None = None) -> int:
                 raw_model=args.raw_model,
                 plan_mode=args.plan,
                 force=args.force,
+                session_id=args.session_id,
             )
             return SUCCESS
 
         elif args.command == "plan":
             if args.plan_action == "done":
-                cmd_plan_done()
+                cmd_plan_done(session_id=args.session_id)
             elif args.plan_action == "block":
-                cmd_plan_block(args.reason)
+                cmd_plan_block(args.reason, session_id=args.session_id)
             else:
-                cmd_plan()
+                cmd_plan(session_id=args.session_id)
             return SUCCESS
 
         elif args.command == "key":
