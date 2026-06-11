@@ -1,4 +1,4 @@
-"""Tool schemas for brain-tool plugin."""
+"""Tool schemas for exocortex-tool plugin."""
 
 BRAIN_THINK = {
     "name": "brain_think",
@@ -6,7 +6,7 @@ BRAIN_THINK = {
         "Create a structured plan for coding tasks using the reasoning engine. "
         "Call this BEFORE any action tools (edit, bash, task). "
         "The reasoning engine will return a step-by-step plan stored in "
-        "~/.brain/state/plan.json. The gate will block action tools until a plan exists. "
+        "~/.exocortex/state/plan.json. The gate will block action tools until a plan exists. "
         "Use this for non-trivial tasks that require planning."
     ),
     "parameters": {

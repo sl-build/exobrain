@@ -48,7 +48,7 @@ class TestOACompatAdapter:
         )
 
         with patch("openai.OpenAI", return_value=mock_openai):
-            from brain.provider.oa_compat import OACompatAdapter
+            from exocortex.provider.oa_compat import OACompatAdapter
 
             adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
             text, stats = adapter.complete(
@@ -100,8 +100,8 @@ class TestOACompatAdapter:
         )
 
         with patch("openai.OpenAI", return_value=mock_openai):
-            from brain.errors import BadResponseError
-            from brain.provider.oa_compat import OACompatAdapter
+            from exocortex.errors import BadResponseError
+            from exocortex.provider.oa_compat import OACompatAdapter
 
             adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
             with pytest.raises(BadResponseError, match="Empty response"):
@@ -111,7 +111,7 @@ class TestOACompatAdapter:
                 )
 
     def test_supports_model_always_true(self):
-        from brain.provider.oa_compat import OACompatAdapter
+        from exocortex.provider.oa_compat import OACompatAdapter
 
         adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
         assert adapter.supports_model("anything")

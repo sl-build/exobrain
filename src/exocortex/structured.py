@@ -1,4 +1,4 @@
-"""Brain CLI v2 — Structured JSON output handling."""
+"""Exocortex CLI — Structured JSON output handling."""
 
 from __future__ import annotations
 

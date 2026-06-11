@@ -1,4 +1,4 @@
-"""Brain CLI v3 — Depth presets mapping to model parameters."""
+"""Exocortex CLI — Depth presets mapping to model parameters."""
 
 from __future__ import annotations
 

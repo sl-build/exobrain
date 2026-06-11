@@ -1,4 +1,4 @@
-"""Brain CLI v2 — Reasoning profiles for think command."""
+"""Exocortex CLI — Reasoning profiles for think command."""
 
 from __future__ import annotations
 

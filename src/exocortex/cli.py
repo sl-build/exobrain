@@ -1,4 +1,4 @@
-"""Brain CLI v2 — Main entry point with argparse."""
+"""Exocortex CLI — Main entry point with argparse."""
 
 from __future__ import annotations
 
@@ -40,10 +40,10 @@ DEFAULT_MAX_TOKENS = 16384
 def build_parser() -> argparse.ArgumentParser:
     """Build the argument parser."""
     parser = argparse.ArgumentParser(
-        prog="brain",
-        description="Brain CLI v2 — Reasoning engine for agents",
+        prog="exocortex",
+        description="Exocortex CLI — Reasoning engine for agents",
     )
-    parser.add_argument("--version", action="version", version=f"brain {__version__}")
+    parser.add_argument("--version", action="version", version=f"exocortex {__version__}")
     parser.add_argument("--session-id", default="", help="Session ID for plan isolation")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 

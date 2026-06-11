@@ -1,6 +1,6 @@
-"""Tests for brain.stats module."""
+"""Tests for exocortex.stats module."""
 
-from brain.stats import COST_PER_1M_TOKENS, Stats
+from exocortex.stats import COST_PER_1M_TOKENS, Stats
 
 
 class TestStats:

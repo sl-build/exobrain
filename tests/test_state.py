@@ -1,11 +1,11 @@
-"""Tests for brain.state module."""
+"""Tests for exocortex.state module."""
 
 import json
 import time
 
 import pytest
 
-from brain.state import (
+from exocortex.state import (
     create_plan,
     delete_plan,
     is_valid,
@@ -18,9 +18,9 @@ from brain.state import (
 
 @pytest.fixture
 def mock_state_dir(tmp_path, monkeypatch):
-    import brain.state as state_mod
+    import exocortex.state as state_mod
 
-    state_dir = tmp_path / "brain" / "state"
+    state_dir = tmp_path / "exocortex" / "state"
     plan_file = state_dir / "plan.json"
     monkeypatch.setattr(state_mod, "STATE_DIR", state_dir)
     monkeypatch.setattr(state_mod, "PLAN_FILE", plan_file)
@@ -35,7 +35,7 @@ def _write_plan(
     session_id: str = "",
     state_dir=None,
 ):
-    import brain.state as state_mod
+    import exocortex.state as state_mod
 
     sd = state_dir or state_mod.STATE_DIR
     sd.mkdir(parents=True, exist_ok=True)
@@ -89,14 +89,14 @@ class TestSaveAndLoad:
         assert load_plan() is None
 
     def test_load_corrupt_json_returns_none(self, mock_state_dir):
-        import brain.state as state_mod
+        import exocortex.state as state_mod
 
         state_mod.STATE_DIR.mkdir(parents=True, exist_ok=True)
         state_mod.PLAN_FILE.write_text("not json at all {{{", encoding="utf-8")
         assert load_plan() is None
 
     def test_load_missing_keys_returns_none(self, mock_state_dir):
-        import brain.state as state_mod
+        import exocortex.state as state_mod
 
         state_mod.STATE_DIR.mkdir(parents=True, exist_ok=True)
         state_mod.PLAN_FILE.write_text('{"prompt": "x"}', encoding="utf-8")
@@ -165,7 +165,7 @@ class TestIsValid:
         assert is_valid(load_plan()) is True
 
     def test_invalid_when_all_steps_done(self, mock_state_dir):
-        import brain.state as state_mod
+        import exocortex.state as state_mod
 
         state_mod.STATE_DIR.mkdir(parents=True, exist_ok=True)
         state_mod.PLAN_FILE.write_text(
@@ -239,7 +239,7 @@ class TestSessionIsolation:
         _write_plan("valid", ["step 1", "step 2"], 0, state_dir=mock_state_dir)
         assert is_valid(load_plan()) is True
 
-        import brain.state as state_mod
+        import exocortex.state as state_mod
 
         state_mod.PLAN_FILE.write_text(
             json.dumps(

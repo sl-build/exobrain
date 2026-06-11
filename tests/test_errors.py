@@ -1,6 +1,6 @@
-"""Tests for brain.errors module."""
+"""Tests for exocortex.errors module."""
 
-from brain.errors import (
+from exocortex.errors import (
     API_FAILURE,
     BAD_RESPONSE,
     INPUT_ERROR,

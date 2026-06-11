@@ -1,8 +1,8 @@
-"""Tests for brain.depth module."""
+"""Tests for exocortex.depth module."""
 
 import pytest
 
-from brain.depth import VALID_DEPTHS, get_depth_config, merge_depth_into_params
+from exocortex.depth import VALID_DEPTHS, get_depth_config, merge_depth_into_params
 
 
 class TestDepthConfigs:

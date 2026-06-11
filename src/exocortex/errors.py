@@ -1,4 +1,4 @@
-"""Brain CLI v2 — Exit codes and custom exceptions."""
+"""Exocortex CLI — Exit codes and custom exceptions."""
 
 # Exit codes
 SUCCESS = 0
@@ -8,7 +8,7 @@ INPUT_ERROR = 3
 
 
 class BrainError(Exception):
-    """Base exception for Brain CLI."""
+    """Base exception for Exocortex CLI."""
 
 
 class APIError(BrainError):

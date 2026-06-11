@@ -1,4 +1,4 @@
-"""Brain CLI v3 — Command handlers (think, plan, key)."""
+"""Exocortex CLI — Command handlers (think, plan, key)."""
 
 from __future__ import annotations
 
@@ -181,8 +181,8 @@ def cmd_key() -> None:
     config = load_config()
     source = find_key_source(config["provider"])
     if source is None:
-        print("No key found. Use: brain key-set <key_value>")
-        print('Or set interactively: brain think "hello"')
+        print("No key found. Use: exocortex key-set <key_value>")
+        print('Or set interactively: exocortex think "hello"')
         print(f"Or edit: {PROFILE_ENV}")
         return
 

@@ -1,4 +1,4 @@
-"""Brain CLI v2 — httpx-based adapter for OpenCode Go reasoning API."""
+"""Exocortex CLI — httpx-based adapter for OpenCode Go reasoning API."""
 
 from __future__ import annotations
 

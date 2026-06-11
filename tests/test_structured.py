@@ -1,10 +1,10 @@
-"""Tests for brain.structured module."""
+"""Tests for exocortex.structured module."""
 
 import json
 
 import pytest
 
-from brain.structured import build_json_output, strip_code_fences, validate_json_output
+from exocortex.structured import build_json_output, strip_code_fences, validate_json_output
 
 
 class TestStripCodeFences:

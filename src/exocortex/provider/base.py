@@ -1,4 +1,4 @@
-"""Brain CLI v2 — Adapter protocol for LLM providers."""
+"""Exocortex CLI — Adapter protocol for LLM providers."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Brain CLI v3 — Plan state persistence in ~/.brain/state/plan.json."""
+"""Exocortex CLI — Plan state persistence in ~/.exocortex/state/plan.json."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-STATE_DIR = Path.home() / ".brain" / "state"
+STATE_DIR = Path.home() / ".exocortex" / "state"
 PLAN_FILE = STATE_DIR / "plan.json"
 
 

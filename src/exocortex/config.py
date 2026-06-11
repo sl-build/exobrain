@@ -1,10 +1,10 @@
-"""Brain CLI v2 — Persistent config file support."""
+"""Exocortex CLI — Persistent config file support."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-CONFIG_DIR = Path.home() / ".config" / "brain"
+CONFIG_DIR = Path.home() / ".config" / "exocortex"
 CONFIG_FILE = CONFIG_DIR / "config.toml"
 
 

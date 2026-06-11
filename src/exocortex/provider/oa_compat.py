@@ -1,4 +1,4 @@
-"""Brain CLI v2 — OpenAI SDK adapter for oa-compat providers."""
+"""Exocortex CLI — OpenAI SDK adapter for oa-compat providers."""
 
 from __future__ import annotations
 

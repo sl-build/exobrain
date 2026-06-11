@@ -32,7 +32,7 @@ class TestReasoningAdapter:
             mock_client = mock_client_cls.return_value.__enter__.return_value
             mock_client.post.return_value = mock_response
 
-            from brain.provider.reasoning import ReasoningAdapter
+            from exocortex.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -58,8 +58,8 @@ class TestReasoningAdapter:
             mock_client = mock_client_cls.return_value.__enter__.return_value
             mock_client.post.return_value = mock_response
 
-            from brain.errors import BadResponseError
-            from brain.provider.reasoning import ReasoningAdapter
+            from exocortex.errors import BadResponseError
+            from exocortex.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -78,8 +78,8 @@ class TestReasoningAdapter:
             mock_client = mock_client_cls.return_value.__enter__.return_value
             mock_client.post.return_value = mock_response
 
-            from brain.errors import APIError
-            from brain.provider.reasoning import ReasoningAdapter
+            from exocortex.errors import APIError
+            from exocortex.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -94,7 +94,7 @@ class TestReasoningAdapter:
 
     def test_supports_model_checks_model_map(self, monkeypatch):
         monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
-        from brain.provider.reasoning import ReasoningAdapter
+        from exocortex.provider.reasoning import ReasoningAdapter
 
         adapter = ReasoningAdapter(
             base_url="https://opencode.ai/zen/go/v1",

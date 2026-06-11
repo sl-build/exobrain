@@ -1,8 +1,8 @@
-"""Tests for brain.config module."""
+"""Tests for exocortex.config module."""
 
 import pytest
 
-from brain.config import load_config, save_config
+from exocortex.config import load_config, save_config
 
 
 class TestConfig:

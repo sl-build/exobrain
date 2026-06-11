@@ -1,4 +1,4 @@
-"""Brain CLI plugin — think + plan + gate for Hermes Agent."""
+"""Exocortex CLI plugin — think + plan + gate for Hermes Agent."""
 
 import json
 import logging
@@ -10,7 +10,7 @@ from . import schemas
 
 logger = logging.getLogger(__name__)
 
-_PLAN_PATH_TEMPLATE = Path.home() / ".brain" / "state"
+_PLAN_PATH_TEMPLATE = Path.home() / ".exocortex" / "state"
 _GATED_TOOLS = {"terminal", "write_file", "patch", "file_edit", "edit", "bash", "task"}
 
 
@@ -23,7 +23,7 @@ def _plan_file(session_id: str = "") -> Path:
 def _run_brain(*args: str) -> str:
     try:
         result = subprocess.run(
-            ["brain", *args],
+            ["exocortex", *args],
             capture_output=True,
             text=True,
             timeout=120,
@@ -31,12 +31,12 @@ def _run_brain(*args: str) -> str:
         output = result.stdout.strip()
         if result.returncode != 0:
             err = result.stderr.strip() or "unknown error"
-            return json.dumps({"error": f"brain failed (exit {result.returncode}): {err}"})
+            return json.dumps({"error": f"exocortex failed (exit {result.returncode}): {err}"})
         return json.dumps({"result": output})
     except FileNotFoundError:
-        return json.dumps({"error": "brain CLI not installed. Run: uv tool install brain-cli"})
+        return json.dumps({"error": "exocortex CLI not installed. Run: uv tool install exocortex"})
     except subprocess.TimeoutExpired:
-        return json.dumps({"error": "brain CLI timed out"})
+        return json.dumps({"error": "exocortex CLI timed out"})
     except Exception as exc:
         return json.dumps({"error": str(exc)})
 

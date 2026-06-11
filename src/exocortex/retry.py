@@ -1,4 +1,4 @@
-"""Brain CLI v2 — Exponential backoff retry for API calls."""
+"""Exocortex CLI — Exponential backoff retry for API calls."""
 
 from __future__ import annotations
 

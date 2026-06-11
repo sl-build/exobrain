@@ -1,6 +1,6 @@
-"""Tests for brain.keys module."""
+"""Tests for exocortex.keys module."""
 
-from brain.keys import (
+from exocortex.keys import (
     PROVIDERS,
     VALID_PROVIDERS,
     find_key_source,
@@ -28,7 +28,7 @@ class TestProviders:
 class TestKeyManagement:
     def test_set_and_find_key(self, mock_env_files, monkeypatch):
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-        monkeypatch.delenv("BRAIN_API_KEY", raising=False)
+        monkeypatch.delenv("EXOCORTEX_API_KEY", raising=False)
         path = set_api_key("sk-test-12345")
         assert path.exists()
 
@@ -42,8 +42,8 @@ class TestKeyManagement:
     def test_env_var_override(self, monkeypatch):
         """Provider-specific env var takes precedence."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-override")
-        monkeypatch.setenv("BRAIN_API_KEY", "sk-generic")
-        from brain.keys import get_api_key
+        monkeypatch.setenv("EXOCORTEX_API_KEY", "sk-generic")
+        from exocortex.keys import get_api_key
 
         key = get_api_key("openrouter")
         assert key == "sk-override"

@@ -1,4 +1,4 @@
-"""Brain CLI v2 — API key management with multi-provider support."""
+"""Exocortex CLI — API key management with multi-provider support."""
 
 from __future__ import annotations
 
@@ -104,7 +104,7 @@ def _save_key_to_file(path: Path, key: str) -> None:
 def get_api_key(provider: str = "openrouter") -> str:
     """Get API key for a provider.
 
-    Lookup order: explicit env var → BRAIN_API_KEY → .env files → fallback env var.
+    Lookup order: explicit env var → EXOCORTEX_API_KEY → .env files → fallback env var.
     """
     prov = PROVIDERS.get(provider)
     if not prov:
@@ -117,8 +117,8 @@ def get_api_key(provider: str = "openrouter") -> str:
     if key:
         return key
 
-    # 2. Generic BRAIN_API_KEY
-    key = os.environ.get("BRAIN_API_KEY", "").strip()
+    # 2. Generic EXOCORTEX_API_KEY
+    key = os.environ.get("EXOCORTEX_API_KEY", "").strip()
     if key:
         return key
 
