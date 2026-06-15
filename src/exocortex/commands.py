@@ -6,11 +6,19 @@ import json
 
 from .client import call_and_print
 from .config import get_default_model as get_config_model
-from .config import get_default_provider, load_config, save_config
+from .config import get_default_provider, load_config, save_config, save_provider_config
 from .context import build_context_block
 from .depth import VALID_DEPTHS
 from .errors import InputError
-from .keys import PROFILE_ENV, VALID_PROVIDERS, find_key_source, set_api_key
+from .keys import (
+    BUILTIN_PROVIDERS,
+    PROFILE_ENV,
+    VALID_PROVIDERS,
+    find_key_source,
+    get_all_providers,
+    get_custom_providers,
+    set_api_key,
+)
 from .profiles import (
     PROFILE_PROMPTS,
     add_profile,
@@ -262,3 +270,227 @@ def cmd_config_set(key: str, value: str) -> None:
 
     save_config(key, value)
     print(f"Set {key} = {value if value else '(empty)'}")
+
+def cmd_providers() -> None:
+    """List all available providers (built-in + custom)."""
+    all_providers = get_all_providers()
+    custom = get_custom_providers()
+
+    # Built-in section
+    print("Built-in providers:")
+    print(f"  {'Name':<15} {'Type':<20} {'Default model':<30} {'Base URL'}")
+    print(f"  {'─'*15} {'─'*20} {'─'*30} {'─'*40}")
+    for name, prov in BUILTIN_PROVIDERS.items():
+        print(
+            f"  {name:<15} {'openai-compatible':<20} "
+            f"{prov['default_model']:<30} {prov['base_url']}"
+        )
+
+    # Custom section
+    if custom:
+        print()
+        print("Custom providers:")
+        print(f"  {'Name':<15} {'Type':<20} {'Default model':<30} {'Base URL'}")
+        print(f"  {'─'*15} {'─'*20} {'─'*30} {'─'*40}")
+        for name, prov in custom.items():
+            prov_type = prov.get("type", "openai-compatible")
+            print(
+                f"  {name:<15} {prov_type:<20} "
+                f"{prov['default_model']:<30} {prov['base_url']}"
+            )
+    else:
+        print()
+        print("No custom providers configured.")
+        print("Use 'brain init' to add one.")
+
+
+def cmd_status() -> None:
+    """Show current config and health status."""
+    config = load_config()
+    provider = config["provider"]
+    model = config.get("model", "")
+    timeout = config.get("timeout", 180)
+
+    print("Current configuration:")
+    print(f"  provider: {provider}")
+    print(f"  model:    {model if model else '(provider default)'}")
+    print(f"  timeout:  {timeout}")
+
+    # Key source
+    key_info = find_key_source(provider)
+    if key_info:
+        _, source = key_info
+        if source:
+            print(f"  API key:  found in {source}")
+        else:
+            print(f"  API key:  found in environment")
+    else:
+        print(f"  API key:  NOT FOUND")
+
+    # Provider summary
+    all_providers = get_all_providers()
+    print()
+    print(f"Configured providers ({len(all_providers)}):")
+    for name, prov in all_providers.items():
+        marker = " (active)" if name == provider else ""
+        print(f"  {name}: {prov['default_model']}{marker}")
+
+    # Quick test offer
+    print()
+    try:
+        answer = input("Send test ping to current provider? [y/N] ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print("\nCancelled.")
+        return
+
+    if answer == "y":
+        print("Sending test ping...")
+        try:
+            response = call_and_print(
+                prompt="Reply with the word OK and nothing else.",
+                provider=provider,
+                model=model or None,
+                max_tokens=10,
+            )
+            print(f"✓ Provider responded: {response.strip()[:50]}")
+        except Exception as e:
+            print(f"✗ Connection failed: {e}")
+            print("  Check your API key with: brain key")
+
+
+def cmd_init() -> None:
+    """Interactive setup wizard for first-time users."""
+    print("Exocortex CLI — First-time setup")
+    print("================================")
+    print()
+
+    # Detect existing state
+    config = load_config()
+    existing_provider = config.get("provider", "")
+    key_info = find_key_source(existing_provider) if existing_provider else None
+    configured = existing_provider and key_info is not None
+
+    if configured:
+        try:
+            answer = input("Already configured. Reconfigure? [y/N] ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if answer != "y":
+            print("Keeping existing configuration.")
+            return
+
+    # Provider choice
+    print("Choose default provider:")
+    print("  1. openrouter (built-in, 300+ models)")
+    print("  2. Custom provider (OpenAI-compatible or Anthropic-compatible)")
+    print()
+    try:
+        choice = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print("\nCancelled.")
+        return
+
+    if choice == "1":
+        # OpenRouter setup
+        print()
+        try:
+            api_key = input("Enter OpenRouter API key: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if not api_key:
+            print("Empty key. Aborting.")
+            return
+
+        set_api_key(api_key, "openrouter")
+        print(f"Key saved to {PROFILE_ENV}")
+
+        # Default model
+        try:
+            model = input("Default model [openai/gpt-5.5]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if not model:
+            model = "openai/gpt-5.5"
+
+        save_config("model", model)
+        save_config("provider", "openrouter")
+        chosen_provider = "openrouter"
+        chosen_model = model
+
+    elif choice == "2":
+        # Custom provider setup
+        print()
+        try:
+            name = input("Provider name (alphanumeric+underscore): ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if not name:
+            print("Empty name. Aborting.")
+            return
+
+        print("Provider type:")
+        print("  1. openai-compatible")
+        print("  2. anthropic-compatible")
+        try:
+            type_choice = input("> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+
+        provider_type = "openai-compatible" if type_choice == "1" else "anthropic-compatible"
+
+        try:
+            base_url = input("Base URL: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if not base_url:
+            print("Empty URL. Aborting.")
+            return
+
+        try:
+            api_key_env = input(f"Env var name for API key [{name.upper()}_API_KEY]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if not api_key_env:
+            api_key_env = f"{name.upper()}_API_KEY"
+
+        try:
+            default_model = input("Default model: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled.")
+            return
+        if not default_model:
+            print("Empty model. Aborting.")
+            return
+
+        save_provider_config(name, provider_type, base_url, api_key_env, default_model)
+        save_config("provider", name)
+        save_config("model", default_model)
+        chosen_provider = name
+        chosen_model = default_model
+        print(f"Provider '{name}' configured.")
+
+    else:
+        print("Invalid choice. Use 1 or 2.")
+        return
+
+    # Test connection
+    print()
+    print("Testing connection...")
+    try:
+        response = call_and_print(
+            prompt="Reply with the word OK and nothing else.",
+            provider=chosen_provider,
+            model=chosen_model,
+            max_tokens=10,
+        )
+        print(f"✓ Setup complete. Try: brain think \"hello\"")
+    except Exception as e:
+        print(f"✗ Connection test failed: {e}")
+        print("  Check your API key with: brain key")

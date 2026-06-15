@@ -9,6 +9,7 @@ from . import __version__
 from .commands import (
     cmd_config,
     cmd_config_set,
+    cmd_init,
     cmd_key,
     cmd_key_set,
     cmd_plan,
@@ -18,6 +19,8 @@ from .commands import (
     cmd_profile_remove,
     cmd_profile_show,
     cmd_profiles,
+    cmd_providers,
+    cmd_status,
     cmd_think,
 )
 from .depth import VALID_DEPTHS
@@ -155,6 +158,15 @@ def build_parser() -> argparse.ArgumentParser:
     configset_parser.add_argument("key", help="Config key: provider|model|timeout")
     configset_parser.add_argument("value", help="Config value")
 
+    # ── init ──
+    subparsers.add_parser("init", help="Interactive setup wizard for first-time users")
+
+    # ── status ──
+    subparsers.add_parser("status", help="Show config and health status")
+
+    # ── providers ──
+    subparsers.add_parser("providers", help="List all available providers")
+
     return parser
 
 
@@ -163,9 +175,20 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    # No command given
+    # No command given — friendly quickstart
     if not args.command:
-        parser.print_help()
+        print("Exocortex CLI v" + __version__ + " — Reasoning engine for agents")
+        print()
+        print("First time? Run:  brain init")
+        print()
+        print("Common commands:")
+        print('  brain think "your question"     ask the AI')
+        print("  brain status                    show config + health")
+        print("  brain providers                 list all providers")
+        print("  brain config                    show current config")
+        print("  brain key                       show API key location")
+        print()
+        print("Full help: brain --help")
         return SUCCESS
 
     try:
@@ -236,6 +259,18 @@ def main(argv: list[str] | None = None) -> int:
 
         elif args.command == "config-set":
             cmd_config_set(args.key, args.value)
+            return SUCCESS
+
+        elif args.command == "init":
+            cmd_init()
+            return SUCCESS
+
+        elif args.command == "status":
+            cmd_status()
+            return SUCCESS
+
+        elif args.command == "providers":
+            cmd_providers()
             return SUCCESS
 
         else:

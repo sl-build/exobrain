@@ -46,6 +46,7 @@ def get_custom_providers() -> dict[str, dict]:
             "default_model": cfg.get("default_model", ""),
             "key_url": cfg.get("key_url", ""),
             "label": cfg.get("label", name),
+            "type": prov_type,
             "default_adapter": cfg.get("default_adapter", default_adapter),
             "model_map": cfg.get("model_map", {}),
             "models": cfg.get("models", []),

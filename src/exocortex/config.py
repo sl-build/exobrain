@@ -65,6 +65,48 @@ def save_config(key: str, value: str) -> None:
             lines.append(f'{k} = "{v}"')
     CONFIG_FILE.write_text("\n".join(lines) + "\n")
 
+def save_provider_config(
+    name: str,
+    provider_type: str,
+    base_url: str,
+    api_key_env: str,
+    default_model: str,
+) -> None:
+    """Write a [providers.<name>] section to config.toml."""
+    _ensure_config()
+    content = CONFIG_FILE.read_text()
+    section_header = f"[providers.{name}]"
+
+    # Build the new section lines
+    section_lines = [
+        "",
+        section_header,
+        f'type = "{provider_type}"',
+        f'base_url = "{base_url}"',
+        f'api_key_env = "{api_key_env}"',
+        f'default_model = "{default_model}"',
+    ]
+
+    # Check if section already exists — replace it
+    if section_header in content:
+        lines = content.splitlines()
+        new_lines = []
+        in_section = False
+        for line in lines:
+            if line.strip() == section_header:
+                in_section = True
+                new_lines.extend(section_lines)
+                continue
+            if in_section and line.strip().startswith("[") and not line.strip().startswith(f"[providers.{name}]"):
+                in_section = False
+            if not in_section:
+                new_lines.append(line)
+        CONFIG_FILE.write_text("\n".join(new_lines) + "\n")
+    else:
+        with open(CONFIG_FILE, "a") as f:
+            for line in section_lines:
+                f.write(line + "\n")
+
 
 def get_default_provider() -> str:
     """Return the default provider from config."""
