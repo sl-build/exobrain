@@ -64,6 +64,29 @@ def save_config(key: str, value: str) -> None:
             lines.append(f"{k} = {v}")
         else:
             lines.append(f'{k} = "{v}"')
+
+    # Preserve [providers.*] sections — save_config must not destroy custom providers
+    provider_configs = config.get("provider_config", {})
+    for prov_name, prov_cfg in provider_configs.items():
+        if not isinstance(prov_cfg, dict):
+            continue
+        lines.append("")
+        lines.append(f"[providers.{prov_name}]")
+        for pk, pv in prov_cfg.items():
+            if isinstance(pv, bool):
+                lines.append(f"{pk} = {str(pv).lower()}")
+            elif isinstance(pv, list):
+                quoted = ", ".join(f'"{x}"' for x in pv)
+                lines.append(f"{pk} = [{quoted}]")
+            elif isinstance(pv, (int, float)):
+                lines.append(f"{pk} = {pv}")
+            elif isinstance(pv, dict):
+                # nested dict: serialize as inline table
+                inner = ", ".join(f'{ik} = "{iv}"' for ik, iv in pv.items())
+                lines.append(f"{pk} = {{ {inner} }}")
+            else:
+                lines.append(f'{pk} = "{pv}"')
+
     CONFIG_FILE.write_text("\n".join(lines) + "\n")
 
 def save_provider_config(
