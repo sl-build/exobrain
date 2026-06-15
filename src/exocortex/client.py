@@ -5,6 +5,7 @@ from __future__ import annotations
 from .config import load_config
 from .context import assemble_messages
 from .depth import get_depth_config, merge_depth_into_params
+from .keys import get_default_model
 from .profiles import get_all_profiles
 from .stats import Stats
 
