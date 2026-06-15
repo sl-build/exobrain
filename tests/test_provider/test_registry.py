@@ -14,7 +14,19 @@ class TestGetAdapter:
         adapter = get_adapter("openai/gpt-4o", "openrouter")
         assert isinstance(adapter, OACompatAdapter)
 
-    def test_opencode_go_default_uses_oa_compat(self, monkeypatch):
+    def test_custom_provider_uses_oa_compat(self, monkeypatch, mock_config_dir):
+        """Custom provider from config.toml should route to oa_compat by default."""
+        config_dir = mock_config_dir
+        config_dir.mkdir(parents=True, exist_ok=True)
+        config_file = config_dir / "config.toml"
+        config_file.write_text(
+            '[providers.opencode_go]\n'
+            'env_var = "OPENCODE_GO_API_KEY"\n'
+            'base_url = "https://opencode.ai/zen/go/v1"\n'
+            'default_model = "qwen3.7-max"\n'
+            'default_adapter = "oa_compat"\n'
+            'model_map = { "qwen3.7-max" = "reasoning" }\n'
+        )
         monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
         from exocortex.provider import get_adapter
         from exocortex.provider.oa_compat import OACompatAdapter
@@ -22,20 +34,24 @@ class TestGetAdapter:
         adapter = get_adapter("gpt-4o", "opencode_go")
         assert isinstance(adapter, OACompatAdapter)
 
-    def test_opencode_go_qwen_uses_reasoning(self, monkeypatch):
+    def test_custom_provider_reasoning_model(self, monkeypatch, mock_config_dir):
+        """Custom provider with model_map should route to reasoning adapter."""
+        config_dir = mock_config_dir
+        config_dir.mkdir(parents=True, exist_ok=True)
+        config_file = config_dir / "config.toml"
+        config_file.write_text(
+            '[providers.opencode_go]\n'
+            'env_var = "OPENCODE_GO_API_KEY"\n'
+            'base_url = "https://opencode.ai/zen/go/v1"\n'
+            'default_model = "qwen3.7-max"\n'
+            'default_adapter = "oa_compat"\n'
+            'model_map = { "qwen3.7-max" = "reasoning" }\n'
+        )
         monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
         from exocortex.provider import get_adapter
         from exocortex.provider.reasoning import ReasoningAdapter
 
         adapter = get_adapter("qwen3.7-max", "opencode_go")
-        assert isinstance(adapter, ReasoningAdapter)
-
-    def test_opencode_go_qwen_pro_uses_reasoning(self, monkeypatch):
-        monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
-        from exocortex.provider import get_adapter
-        from exocortex.provider.reasoning import ReasoningAdapter
-
-        adapter = get_adapter("qwen3.6-plus", "opencode_go")
         assert isinstance(adapter, ReasoningAdapter)
 
 

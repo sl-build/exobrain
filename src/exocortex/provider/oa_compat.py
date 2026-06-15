@@ -13,9 +13,10 @@ from ..stats import Stats
 class OACompatAdapter:
     """Wrapper around the OpenAI Python SDK for any oa-compat endpoint."""
 
-    def __init__(self, base_url: str, api_key: str):
+    def __init__(self, base_url: str, api_key: str, timeout: float | None = None):
         self._base_url = base_url
         self._api_key = api_key
+        self._timeout = timeout
 
     def complete(
         self,
@@ -25,6 +26,7 @@ class OACompatAdapter:
         max_tokens: int | None = None,
         temperature: float | None = None,
         reasoning_effort: str | None = None,
+        timeout: float | None = None,
         retries: int = 3,
     ) -> tuple[str, Stats]:
         from openai import OpenAI
@@ -46,7 +48,8 @@ class OACompatAdapter:
         stats = Stats(model=model)
         start_time = time.monotonic()
 
-        client = OpenAI(api_key=self._api_key, base_url=self._base_url)
+        effective_timeout = timeout if timeout is not None else self._timeout
+        client = OpenAI(api_key=self._api_key, base_url=self._base_url, timeout=effective_timeout)
 
         def _make_call():
             try:

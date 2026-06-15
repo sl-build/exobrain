@@ -100,5 +100,7 @@ class TestReasoningAdapter:
             base_url="https://opencode.ai/zen/go/v1",
             api_key="test-key",
         )
+        # supports_model checks against all providers (built-in + custom)
+        # qwen3.7-max is configured as custom opencode_go model in config.toml
         assert adapter.supports_model("qwen3.7-max")
         assert not adapter.supports_model("gpt-4o")

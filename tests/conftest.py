@@ -18,13 +18,15 @@ def tmp_dir(tmp_path):
 @pytest.fixture
 def mock_config_dir(tmp_path, monkeypatch):
     """Redirect config dir to a temp dir so tests don't touch real config."""
+    config_dir = tmp_path / "exocortex"
+    config_dir.mkdir(parents=True, exist_ok=True)
     import exocortex.config as config_mod
-    monkeypatch.setattr(config_mod, "CONFIG_DIR", tmp_path / "exocortex")
-    monkeypatch.setattr(config_mod, "CONFIG_FILE", tmp_path / "exocortex" / "config.toml")
+    monkeypatch.setattr(config_mod, "CONFIG_DIR", config_dir)
+    monkeypatch.setattr(config_mod, "CONFIG_FILE", config_dir / "config.toml")
     # Also patch profiles file path
     import exocortex.profiles as profiles_mod
-    monkeypatch.setattr(profiles_mod, "PROFILES_FILE", tmp_path / "exocortex" / "profiles.toml")
-    return tmp_path / "exocortex"
+    monkeypatch.setattr(profiles_mod, "PROFILES_FILE", config_dir / "profiles.toml")
+    return config_dir
 
 
 @pytest.fixture

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from .config import load_config
 from .context import assemble_messages
 from .depth import get_depth_config, merge_depth_into_params
-from .keys import get_default_model
 from .profiles import get_all_profiles
 from .stats import Stats
 
@@ -74,6 +74,14 @@ def _call_api(
     # raw_model: pass model name as-is, no transformation
     final_model = actual_model if raw_model else actual_model
 
+    # Read timeout from config
+    config = load_config()
+    timeout_str = config.get("timeout", 180)
+    try:
+        timeout_val = float(timeout_str)
+    except (ValueError, TypeError):
+        timeout_val = 180.0
+
     return complete(
         messages=messages,
         model=final_model,
@@ -81,6 +89,7 @@ def _call_api(
         max_tokens=params.get("max_tokens"),
         temperature=params.get("temperature"),
         reasoning_effort=params.get("reasoning_effort"),
+        timeout=timeout_val,
     )
 
 

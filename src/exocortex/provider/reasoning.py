@@ -19,9 +19,10 @@ class ReasoningAdapter:
     Uses Anthropic Messages API format at /zen/go/v1/messages.
     """
 
-    def __init__(self, base_url: str, api_key: str):
+    def __init__(self, base_url: str, api_key: str, timeout: float | None = None):
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
+        self._timeout = timeout or 120.0
 
     def complete(
         self,
@@ -31,6 +32,7 @@ class ReasoningAdapter:
         max_tokens: int | None = None,
         temperature: float | None = None,
         reasoning_effort: str | None = None,
+        timeout: float | None = None,
         retries: int = 3,
     ) -> tuple[str, Stats]:
         system_prompt: str | None = None
@@ -61,7 +63,8 @@ class ReasoningAdapter:
 
         def _make_call():
             try:
-                with httpx.Client(timeout=120.0) as hclient:
+                effective_timeout = timeout if timeout is not None else self._timeout
+                with httpx.Client(timeout=effective_timeout) as hclient:
                     resp = hclient.post(
                         f"{self._base_url}/messages",
                         headers={
@@ -126,6 +129,12 @@ class ReasoningAdapter:
         return result, stats
 
     def supports_model(self, model: str) -> bool:
-        from ..keys import get_adapter_name
+        from ..keys import get_all_providers
 
-        return get_adapter_name("opencode_go", model) == "reasoning"
+        for provider_name, prov in get_all_providers().items():
+            model_map = prov.get("model_map", {})
+            if model in model_map and model_map[model] == "reasoning":
+                return True
+            if prov.get("default_adapter") == "reasoning" and model in prov.get("models", []):
+                return True
+        return False

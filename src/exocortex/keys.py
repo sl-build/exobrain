@@ -13,7 +13,7 @@ PROFILE_ENV = Path.home() / ".hermes" / "profiles" / "goose" / ".env"
 GLOBAL_ENV = Path.home() / ".hermes" / ".env"
 
 # ── provider definitions ────────────────────────────────────────
-PROVIDERS: dict[str, dict] = {
+BUILTIN_PROVIDERS: dict[str, dict] = {
     "openrouter": {
         "env_var": "OPENROUTER_API_KEY",
         "base_url": "https://openrouter.ai/api/v1",
@@ -23,22 +23,46 @@ PROVIDERS: dict[str, dict] = {
         "default_adapter": "oa_compat",
         "model_map": {},
     },
-    "opencode_go": {
-        "env_var": "OPENCODE_GO_API_KEY",
-        "base_url": "https://opencode.ai/zen/go/v1",
-        "default_model": "qwen3.7-max",
-        "key_url": "https://opencode.ai/auth",
-        "label": "OpenCode Go",
-        "default_adapter": "oa_compat",
-        "model_map": {
-            "qwen3.7-max": "reasoning",
-            "qwen3.6-plus": "reasoning",
-            "qwen3.5-plus": "reasoning",
-        },
-    },
 }
 
-VALID_PROVIDERS = list(PROVIDERS.keys())
+
+def get_custom_providers() -> dict[str, dict]:
+    """Load custom providers from [providers] section in config.toml."""
+    from .config import load_config
+
+    config = load_config()
+    custom = config.get("provider_config", {})
+    result: dict[str, dict] = {}
+    for name, cfg in custom.items():
+        # Map type field to adapter name
+        prov_type = cfg.get("type", "openai-compatible")
+        if prov_type == "anthropic-compatible":
+            default_adapter = "reasoning"
+        else:
+            default_adapter = "oa_compat"
+        result[name] = {
+            "env_var": cfg.get("api_key_env", f"{name.upper()}_API_KEY"),
+            "base_url": cfg.get("base_url", ""),
+            "default_model": cfg.get("default_model", ""),
+            "key_url": cfg.get("key_url", ""),
+            "label": cfg.get("label", name),
+            "default_adapter": cfg.get("default_adapter", default_adapter),
+            "model_map": cfg.get("model_map", {}),
+            "models": cfg.get("models", []),
+        }
+    return result
+
+
+def get_all_providers() -> dict[str, dict]:
+    """Return merged built-in + custom providers. Custom overrides built-in."""
+    all_providers = dict(BUILTIN_PROVIDERS)
+    all_providers.update(get_custom_providers())
+    return all_providers
+
+
+PROVIDERS = BUILTIN_PROVIDERS  # backward compat for direct imports
+
+VALID_PROVIDERS = list(get_all_providers().keys())
 
 
 def _find_var_in_file(path: Path, var_name: str) -> str | None:
@@ -83,32 +107,15 @@ def _save_var_to_file(path: Path, var_name: str, value: str) -> None:
 
     path.write_text("\n".join(new_lines) + "\n")
 
-
-# ── backward-compatible v1 functions ────────────────────────────
-KEY_NAME = "OPENROUTER_API_KEY"
-
-
-def _find_key_in_file(path: Path) -> str | None:
-    """Extract OPENROUTER_API_KEY from a .env file (v1 compat)."""
-    return _find_var_in_file(path, KEY_NAME)
-
-
-def _save_key_to_file(path: Path, key: str) -> None:
-    """Save OPENROUTER_API_KEY to a .env file (v1 compat)."""
-    _save_var_to_file(path, KEY_NAME, key)
-
-
-# ── multi-provider key resolution ───────────────────────────────
-
-
 def get_api_key(provider: str = "openrouter") -> str:
     """Get API key for a provider.
 
     Lookup order: explicit env var → EXOCORTEX_API_KEY → .env files → fallback env var.
     """
-    prov = PROVIDERS.get(provider)
+    providers = get_all_providers()
+    prov = providers.get(provider)
     if not prov:
-        raise InputError(f"Unknown provider: {provider}. Valid: {', '.join(VALID_PROVIDERS)}")
+        raise InputError(f"Unknown provider: {provider}. Valid: {', '.join(providers.keys())}")
 
     env_var = prov["env_var"]
 
@@ -169,14 +176,16 @@ def set_api_key(key: str, provider: str = "openrouter") -> Path:
     if not key:
         raise InputError("Empty key. Aborting.")
 
-    env_var = PROVIDERS[provider]["env_var"]
+    providers = get_all_providers()
+    env_var = providers[provider]["env_var"]
     _save_var_to_file(PROFILE_ENV, env_var, key)
     return PROFILE_ENV
 
 
 def find_key_source(provider: str = "openrouter") -> tuple[str, Path | None] | None:
     """Return (key_value, source_path_or_None) if found, else None."""
-    prov = PROVIDERS[provider]
+    providers = get_all_providers()
+    prov = providers[provider]
     env_var = prov["env_var"]
 
     # Check .env files
@@ -195,9 +204,10 @@ def find_key_source(provider: str = "openrouter") -> tuple[str, Path | None] | N
 
 def get_base_url(provider: str) -> str:
     """Get default base URL for a provider."""
-    prov = PROVIDERS.get(provider)
+    providers = get_all_providers()
+    prov = providers.get(provider)
     if not prov:
-        raise InputError(f"Unknown provider: {provider}. Valid: {', '.join(VALID_PROVIDERS)}")
+        raise InputError(f"Unknown provider: {provider}. Valid: {', '.join(providers.keys())}")
 
     # Allow env var override
     env_url = os.environ.get(f"{provider.upper()}_BASE_URL", "").strip()
@@ -208,14 +218,16 @@ def get_base_url(provider: str) -> str:
 
 def get_default_model(provider: str) -> str:
     """Get default model for a provider."""
-    prov = PROVIDERS.get(provider)
+    providers = get_all_providers()
+    prov = providers.get(provider)
     if not prov:
-        return PROVIDERS["openrouter"]["default_model"]
+        return providers["openrouter"]["default_model"]
     return prov["default_model"]
 
 
 def get_adapter_name(provider: str, model: str) -> str:
     """Return adapter name for a model (from model_map or provider default)."""
-    prov = PROVIDERS.get(provider, {})
+    providers = get_all_providers()
+    prov = providers.get(provider, {})
     model_map = prov.get("model_map", {})
     return model_map.get(model, prov.get("default_adapter", "oa_compat"))

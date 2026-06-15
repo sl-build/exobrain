@@ -1,4 +1,4 @@
-# Exocortex CLI v0.2.0 — Reasoning Engine for AI Agents
+# Exocortex CLI v0.2.1 — Reasoning Engine for AI Agents
 
 [![PyPI version](https://img.shields.io/pypi/v/exocortex)](https://pypi.org/project/exocortex/)
 

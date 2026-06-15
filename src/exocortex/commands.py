@@ -250,12 +250,12 @@ def cmd_config() -> None:
     print(f"provider: {config['provider']}")
     model = config["model"]
     print(f"model: {model if model else '(provider default)'}")
-
+    print(f"timeout: {config.get('timeout', '120')}")
 
 def cmd_config_set(key: str, value: str) -> None:
     """Set a configuration value."""
-    if key not in ("provider", "model"):
-        raise InputError(f"Unknown config key: {key}. Valid: provider, model")
+    if key not in ("provider", "model", "timeout"):
+        raise InputError(f"Unknown config key: {key}. Valid: provider, model, timeout")
 
     if key == "provider" and value not in VALID_PROVIDERS:
         raise InputError(f"Unknown provider: {value}. Valid: {', '.join(VALID_PROVIDERS)}")

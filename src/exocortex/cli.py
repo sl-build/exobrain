@@ -52,7 +52,7 @@ def build_parser() -> argparse.ArgumentParser:
     think_parser.add_argument("prompt", help="The prompt/question to think about")
     think_parser.add_argument("--session-id", default="", help="Session ID for plan isolation")
     think_parser.add_argument(
-        "--provider", choices=VALID_PROVIDERS, help="Provider: openrouter|opencode_go"
+        "--provider", choices=VALID_PROVIDERS, help="Provider (default: openrouter)"
     )
     think_parser.add_argument(
         "--model", "-m", default=None, help="Model ID (default: from config or provider default)"
@@ -152,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # ── config-set ──
     configset_parser = subparsers.add_parser("config-set", help="Set a config value")
-    configset_parser.add_argument("key", help="Config key: provider|model")
+    configset_parser.add_argument("key", help="Config key: provider|model|timeout")
     configset_parser.add_argument("value", help="Config value")
 
     return parser

@@ -1,4 +1,4 @@
-"""Exocortex CLI — Provider adapter layer."""
+"""Exocortex CLI — Provider adapter layer.
 
 Registry and factory for routing model+provider pairs to the correct adapter.
 """
@@ -21,7 +21,7 @@ def register_adapter(name: str, adapter: Adapter) -> None:
     _REGISTRY[name] = adapter
 
 
-def _build_adapter(name: str, provider: str) -> Adapter:
+def _build_adapter(name: str, provider: str, timeout: float | None = None) -> Adapter:
     """Instantiate (or retrieve cached) adapter for a provider."""
     cache_key = f"{name}:{provider}"
     existing = _REGISTRY.get(cache_key)
@@ -34,24 +34,24 @@ def _build_adapter(name: str, provider: str) -> Adapter:
     if name == "reasoning":
         from .reasoning import ReasoningAdapter
 
-        adapter: Adapter = ReasoningAdapter(base_url=base_url, api_key=api_key)
+        adapter: Adapter = ReasoningAdapter(base_url=base_url, api_key=api_key, timeout=timeout)
     else:
         from .oa_compat import OACompatAdapter
 
-        adapter = OACompatAdapter(base_url=base_url, api_key=api_key)
+        adapter = OACompatAdapter(base_url=base_url, api_key=api_key, timeout=timeout)
 
     _REGISTRY[cache_key] = adapter
     return adapter
 
 
-def get_adapter(model: str, provider: str) -> Adapter:
+def get_adapter(model: str, provider: str, timeout: float | None = None) -> Adapter:
     """Resolve the correct adapter for a model+provider pair.
 
     1. Checks model_map in provider config.
     2. Falls back to the provider's default_adapter.
     """
     name = get_adapter_name(provider, model)
-    return _build_adapter(name, provider)
+    return _build_adapter(name, provider, timeout=timeout)
 
 
 def complete(
@@ -62,13 +62,15 @@ def complete(
     max_tokens: int | None = None,
     temperature: float | None = None,
     reasoning_effort: str | None = None,
+    timeout: float | None = None,
 ) -> tuple[str, Stats]:
     """Send messages through the correct adapter for the model+provider pair."""
-    adapter = get_adapter(model, provider)
+    adapter = get_adapter(model, provider, timeout=timeout)
     return adapter.complete(
         messages=messages,
         model=model,
         max_tokens=max_tokens,
         temperature=temperature,
         reasoning_effort=reasoning_effort,
+        timeout=timeout,
     )

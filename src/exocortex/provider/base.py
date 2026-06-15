@@ -18,6 +18,7 @@ class Adapter(Protocol):
         max_tokens: int | None = None,
         temperature: float | None = None,
         reasoning_effort: str | None = None,
+        timeout: float | None = None,
     ) -> tuple[str, Stats]: ...
 
     def supports_model(self, model: str) -> bool: ...

@@ -17,12 +17,8 @@ class TestProviders:
         assert "openrouter" in PROVIDERS
         assert PROVIDERS["openrouter"]["base_url"] == "https://openrouter.ai/api/v1"
 
-    def test_opencode_go_provider(self):
-        assert "opencode_go" in PROVIDERS
-        assert PROVIDERS["opencode_go"]["base_url"] == "https://opencode.ai/zen/go/v1"
-
     def test_valid_providers_list(self):
-        assert set(VALID_PROVIDERS) == {"openrouter", "opencode_go"}
+        assert "openrouter" in VALID_PROVIDERS
 
 
 class TestKeyManagement:
@@ -53,9 +49,6 @@ class TestBaseUrls:
     def test_openrouter_url(self):
         assert get_base_url("openrouter") == "https://openrouter.ai/api/v1"
 
-    def test_opencode_go_url(self):
-        assert get_base_url("opencode_go") == "https://opencode.ai/zen/go/v1"
-
     def test_env_override_url(self, monkeypatch):
         monkeypatch.setenv("OPENROUTER_BASE_URL", "https://custom.api/v1")
         assert get_base_url("openrouter") == "https://custom.api/v1"
@@ -64,6 +57,3 @@ class TestBaseUrls:
 class TestDefaultModels:
     def test_openrouter_default(self):
         assert get_default_model("openrouter") == "openai/gpt-5.5"
-
-    def test_opencode_go_default(self):
-        assert get_default_model("opencode_go") == "qwen3.7-max"
