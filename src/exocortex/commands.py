@@ -103,25 +103,6 @@ def cmd_think(
     if plan_mode:
         effective_profile = "planner"
         effective_json = True
-    effective_max_iterations = max_iterations if max_iterations is not None else get_max_iterations()
-
-    response = call_and_print(
-         prompt=prompt,
-         model=model,
-         provider=provider,
-         context_block=context_block,
-         depth=depth,
-         max_tokens=max_tokens,
-         temperature=temperature,
-         profile=effective_profile,
-         raw=raw,
-         json_output=effective_json,
-         show_stats=show_stats,
-         raw_model=raw_model,
-         suppress_print=plan_mode,
-        max_iterations=effective_max_iterations,
-     )
-
     response = call_and_print(
         prompt=prompt,
         model=model,
