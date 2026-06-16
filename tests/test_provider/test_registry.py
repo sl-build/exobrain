@@ -1,4 +1,4 @@
-"""Tests for exocortex.provider registry and routing."""
+"""Tests for exobrain.provider registry and routing."""
 
 from unittest.mock import patch
 
@@ -8,8 +8,8 @@ class TestGetAdapter:
 
     def test_openrouter_uses_oa_compat(self, monkeypatch):
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-test")
-        from exocortex.provider import get_adapter
-        from exocortex.provider.oa_compat import OACompatAdapter
+        from exobrain.provider import get_adapter
+        from exobrain.provider.oa_compat import OACompatAdapter
 
         adapter = get_adapter("openai/gpt-4o", "openrouter")
         assert isinstance(adapter, OACompatAdapter)
@@ -28,8 +28,8 @@ class TestGetAdapter:
             'model_map = { "qwen3.7-max" = "reasoning" }\n'
         )
         monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
-        from exocortex.provider import get_adapter
-        from exocortex.provider.oa_compat import OACompatAdapter
+        from exobrain.provider import get_adapter
+        from exobrain.provider.oa_compat import OACompatAdapter
 
         adapter = get_adapter("gpt-4o", "opencode_go")
         assert isinstance(adapter, OACompatAdapter)
@@ -48,8 +48,8 @@ class TestGetAdapter:
             'model_map = { "qwen3.7-max" = "reasoning" }\n'
         )
         monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
-        from exocortex.provider import get_adapter
-        from exocortex.provider.reasoning import ReasoningAdapter
+        from exobrain.provider import get_adapter
+        from exobrain.provider.reasoning import ReasoningAdapter
 
         adapter = get_adapter("qwen3.7-max", "opencode_go")
         assert isinstance(adapter, ReasoningAdapter)
@@ -102,7 +102,7 @@ class TestComplete:
         )
 
         with patch("openai.OpenAI", return_value=mock_openai):
-            from exocortex.provider import complete
+            from exobrain.provider import complete
 
             text, stats = complete(
                 messages=[{"role": "user", "content": "hi"}],
@@ -115,6 +115,6 @@ class TestComplete:
 
     def test_unknown_provider_falls_back(self):
         """An unknown provider name should raise on get_adapter."""
-        from exocortex.keys import PROVIDERS
+        from exobrain.keys import PROVIDERS
 
         assert "nonexistent" not in PROVIDERS

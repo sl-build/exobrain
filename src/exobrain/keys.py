@@ -1,4 +1,4 @@
-"""Exocortex CLI — API key management with multi-provider support."""
+"""ExoBrain CLI — API key management with multi-provider support."""
 
 from __future__ import annotations
 
@@ -113,7 +113,7 @@ def _save_var_to_file(path: Path, var_name: str, value: str) -> None:
 def get_api_key(provider: str = "openrouter") -> str:
     """Get API key for a provider.
 
-    Lookup order: explicit env var → EXOCORTEX_API_KEY → .env files → fallback env var.
+    Lookup order: explicit env var → EXOBRAIN_API_KEY → .env files → fallback env var.
     """
     providers = get_all_providers()
     prov = providers.get(provider)
@@ -127,8 +127,8 @@ def get_api_key(provider: str = "openrouter") -> str:
     if key:
         return key
 
-    # 2. Generic EXOCORTEX_API_KEY
-    key = os.environ.get("EXOCORTEX_API_KEY", "").strip()
+    # 2. Generic EXOBRAIN_API_KEY
+    key = os.environ.get("EXOBRAIN_API_KEY", "").strip()
     if key:
         return key
 

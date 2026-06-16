@@ -1,8 +1,8 @@
-"""Tests for exocortex.context module — context injection and message assembly."""
+"""Tests for exobrain.context module — context injection and message assembly."""
 
 import pytest
 
-from exocortex.context import assemble_messages, build_context_block
+from exobrain.context import assemble_messages, build_context_block
 
 
 class TestBuildContextBlock:
@@ -101,7 +101,7 @@ class TestAssembleMessages:
         assert idx_ctx < idx_prompt, "context should precede prompt"
 
     def test_article_comment_example_file(self, tmp_path):
-        """Article comment: brain think "Critique this logic" --context-file src/app.ts --profile critic"""
+        """Article comment: exobrain think "Critique this logic" --context-file src/app.ts --profile critic"""
         f = tmp_path / "app.ts"
         f.write_text("function foo() { return 1; }")
         ctx = build_context_block(context_file=str(f))
@@ -109,7 +109,7 @@ class TestAssembleMessages:
         assert "function foo()" in msgs[0]["content"]
 
     def test_article_comment_example_stdin(self, monkeypatch):
-        """Article comment: cat error.log | brain think "Why did this fail?" --stdin-context --profile reasoning"""
+        """Article comment: cat error.log | exobrain think "Why did this fail?" --stdin-context --profile reasoning"""
         import io
         monkeypatch.setattr("sys.stdin", io.StringIO("ERROR: connection refused"))
         monkeypatch.setattr("sys.stdin.isatty", lambda: False)

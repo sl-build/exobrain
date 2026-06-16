@@ -1,10 +1,10 @@
-"""Tests for exocortex.structured module."""
+"""Tests for exobrain.structured module."""
 
 import json
 
 import pytest
 
-from exocortex.structured import build_json_output, strip_code_fences, validate_json_output
+from exobrain.structured import build_json_output, strip_code_fences, validate_json_output
 
 
 class TestStripCodeFences:

@@ -1,4 +1,4 @@
-"""Exocortex CLI — Depth presets mapping to model parameters."""
+"""ExoBrain CLI — Depth presets mapping to model parameters."""
 
 from __future__ import annotations
 

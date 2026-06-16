@@ -48,7 +48,7 @@ class TestOACompatAdapter:
         )
 
         with patch("openai.OpenAI", return_value=mock_openai):
-            from exocortex.provider.oa_compat import OACompatAdapter
+            from exobrain.provider.oa_compat import OACompatAdapter
 
             adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
             text, stats = adapter.complete(
@@ -100,8 +100,8 @@ class TestOACompatAdapter:
         )
 
         with patch("openai.OpenAI", return_value=mock_openai):
-            from exocortex.errors import BadResponseError
-            from exocortex.provider.oa_compat import OACompatAdapter
+            from exobrain.errors import BadResponseError
+            from exobrain.provider.oa_compat import OACompatAdapter
 
             adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
             with pytest.raises(BadResponseError, match="Empty response"):
@@ -111,7 +111,7 @@ class TestOACompatAdapter:
                 )
 
     def test_supports_model_always_true(self):
-        from exocortex.provider.oa_compat import OACompatAdapter
+        from exobrain.provider.oa_compat import OACompatAdapter
 
         adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
         assert adapter.supports_model("anything")
@@ -171,7 +171,7 @@ class TestOACompatAdapter:
             )()
 
         with patch("openai.OpenAI", side_effect=fake_openai_init):
-            from exocortex.provider.oa_compat import OACompatAdapter
+            from exobrain.provider.oa_compat import OACompatAdapter
 
             adapter = OACompatAdapter(base_url="https://test.url", api_key="test-key")
             assert adapter._timeout == 180.0
@@ -184,7 +184,7 @@ class TestOACompatAdapter:
     def test_connection_error_retries(self):
         """openai.APIConnectionError should raise RetryableError and be retried."""
         import openai
-        from exocortex.provider.oa_compat import OACompatAdapter
+        from exobrain.provider.oa_compat import OACompatAdapter
 
         call_count = 0
 

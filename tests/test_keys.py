@@ -1,6 +1,6 @@
-"""Tests for exocortex.keys module."""
+"""Tests for exobrain.keys module."""
 
-from exocortex.keys import (
+from exobrain.keys import (
     PROVIDERS,
     VALID_PROVIDERS,
     find_key_source,
@@ -24,7 +24,7 @@ class TestProviders:
 class TestKeyManagement:
     def test_set_and_find_key(self, mock_env_files, monkeypatch):
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-        monkeypatch.delenv("EXOCORTEX_API_KEY", raising=False)
+        monkeypatch.delenv("EXOBRAIN_API_KEY", raising=False)
         path = set_api_key("sk-test-12345")
         assert path.exists()
 
@@ -38,8 +38,8 @@ class TestKeyManagement:
     def test_env_var_override(self, monkeypatch):
         """Provider-specific env var takes precedence."""
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-override")
-        monkeypatch.setenv("EXOCORTEX_API_KEY", "sk-generic")
-        from exocortex.keys import get_api_key
+        monkeypatch.setenv("EXOBRAIN_API_KEY", "sk-generic")
+        from exobrain.keys import get_api_key
 
         key = get_api_key("openrouter")
         assert key == "sk-override"
@@ -51,12 +51,12 @@ class TestKeyManagement:
 
         Regression: previously _find_var_in_file only matched `VAR=value` at
         line start, so `export OPENROUTER_API_KEY=sk-...` was silently skipped.
-        That broke direct (non-wrapper) invocations of `brain think` for any
+        That broke direct (non-wrapper) invocations of `exobrain think` for any
         user whose .env used the `export ` prefix — including the goose profile
         shipped with Hermes.
         """
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-        monkeypatch.delenv("EXOCORTEX_API_KEY", raising=False)
+        monkeypatch.delenv("EXOBRAIN_API_KEY", raising=False)
         mock_env_files.write_text(
             "# comment line\n"
             "\n"
@@ -72,7 +72,7 @@ class TestKeyManagement:
     ):
         """Plain `VAR=value` form must keep working (no regression)."""
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-        monkeypatch.delenv("EXOCORTEX_API_KEY", raising=False)
+        monkeypatch.delenv("EXOBRAIN_API_KEY", raising=False)
         mock_env_files.write_text("OPENROUTER_API_KEY=sk-plain\n")
         result = find_key_source("openrouter")
         assert result is not None

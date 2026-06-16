@@ -38,7 +38,7 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.return_value = msg
 
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -58,8 +58,8 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.return_value = msg
 
-            from exocortex.errors import BadResponseError
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.errors import BadResponseError
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -83,8 +83,8 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.side_effect = api_error
 
-            from exocortex.errors import APIError
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.errors import APIError
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -99,7 +99,7 @@ class TestReasoningAdapter:
 
     def test_supports_model_checks_model_map(self, monkeypatch):
         monkeypatch.setenv("OPENCODE_GO_API_KEY", "sk-test")
-        from exocortex.provider.reasoning import ReasoningAdapter
+        from exobrain.provider.reasoning import ReasoningAdapter
 
         adapter = ReasoningAdapter(
             base_url="https://opencode.ai/zen/go/v1",
@@ -115,7 +115,7 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.return_value = msg
 
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -147,7 +147,7 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.side_effect = create_side_effect
 
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -178,7 +178,7 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.side_effect = create_side_effect
 
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -202,7 +202,7 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.return_value = msg
 
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -221,8 +221,8 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.return_value = msg
 
-            from exocortex.errors import BadResponseError
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.errors import BadResponseError
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -244,7 +244,7 @@ class TestReasoningAdapter:
         with patch("anthropic.Anthropic") as mock_client_cls:
             mock_client_cls.return_value.messages.create.return_value = msg
 
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",
@@ -259,7 +259,7 @@ class TestReasoningAdapter:
     def test_base_url_strips_v1_suffix(self):
         """anthropic SDK appends /v1/messages, so we strip /v1 from config URL."""
         with patch("anthropic.Anthropic") as mock_client_cls:
-            from exocortex.provider.reasoning import ReasoningAdapter
+            from exobrain.provider.reasoning import ReasoningAdapter
 
             adapter = ReasoningAdapter(
                 base_url="https://opencode.ai/zen/go/v1",

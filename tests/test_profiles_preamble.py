@@ -1,8 +1,8 @@
-"""Exocortex CLI — Tests for external brain preamble and iteration limit."""
+"""ExoBrain CLI — Tests for external brain preamble and iteration limit."""
 
 from __future__ import annotations
 
-from exocortex.profiles import (
+from exobrain.profiles import (
     EXTERNAL_BRAIN_PREAMBLE,
     MAX_BRAIN_ITERATIONS,
     PROFILE_PROMPTS,

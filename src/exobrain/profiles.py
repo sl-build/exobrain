@@ -1,4 +1,4 @@
-"""Exocortex CLI — Reasoning profiles for think command."""
+"""ExoBrain CLI — Reasoning profiles for think command."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from .config import CONFIG_DIR
 MAX_BRAIN_ITERATIONS = 3
 
 EXTERNAL_BRAIN_PREAMBLE = """\
-You are the EXTERNAL REASONING BRAIN of an AI agent system, invoked via the `brain` CLI (also known as `exocortex`).
+You are the EXTERNAL REASONING BRAIN of an AI agent system, invoked via the `exobrain` CLI.
 
 # Identity
 You are called by a MAIN AGENT (a coding/orchestration AI like Hermes, Claude Code, etc.) that holds:

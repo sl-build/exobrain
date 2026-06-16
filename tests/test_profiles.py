@@ -1,9 +1,9 @@
-"""Tests for exocortex.profiles module."""
+"""Tests for exobrain.profiles module."""
 
 
 import pytest
 
-from exocortex.profiles import (
+from exobrain.profiles import (
     PROFILE_PROMPTS,
     add_profile,
     get_all_profiles,

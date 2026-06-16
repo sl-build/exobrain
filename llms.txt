@@ -1,4 +1,4 @@
-# Exocortex CLI
+# ExoBrain CLI
 
 > A Python CLI reasoning engine for AI agents. Sends prompts to OpenRouter or any OpenAI/Anthropic-compatible endpoint, returns responses. Works as CLI, MCP tool, or Python library. v0.2.5.
 
@@ -6,27 +6,37 @@
 
 ```bash
 # Preferred (isolated, fast)
-uv tool install exocortex-cli
+uv tool install exobrain-cli
 
 # Alternatives
-pipx install exocortex-cli
-pip install exocortex-cli
+pipx install exobrain-cli
+pip install exobrain-cli
 
 # From source
-git clone https://github.com/sl-build/exocortex.git
-cd exocortex && uv pip install -e .
+git clone https://github.com/sl-build/exobrain.git
+cd exobrain && uv pip install -e .
 
 # Verify
-brain --version   # exocortex 0.2.x
+exobrain --version   # exobrain 0.2.x
 ```
 
 Requires Python 3.11+.
+
+## Quick start for agents
+
+1. Install: `uv tool install exobrain-cli`
+2. Set API key: `exobrain init`
+3. Add to SOUL.md or system prompt:
+```
+You have an external reasoning engine. Use `exobrain think "..."` for complex reasoning, planning, and analysis.
+```
+4. (Optional) Add the ExoBrain skill from `skills/exobrain.md` for structured usage patterns.
 
 ## Setup (one-time)
 
 **Interactive:**
 ```bash
-brain init
+exobrain init
 ```
 Walks through: provider choice, API key, default model, connection test.
 
@@ -36,29 +46,29 @@ Walks through: provider choice, API key, default model, connection test.
 export OPENROUTER_API_KEY="sk-or-v1-..."
 
 # 2. Optional: set default model
-brain config-set model openai/gpt-4o
-brain config-set timeout 300   # seconds, default 180
+exobrain config-set model openai/gpt-4o
+exobrain config-set timeout 300   # seconds, default 180
 
 # 3. Verify
-brain status
-brain providers
-brain think "Reply with OK" --raw
+exobrain status
+exobrain providers
+exobrain think "Reply with OK" --raw
 ```
 
 ## Use
 
 ```bash
-brain think "How does async/await work?"
-brain think "Explain" --context-file code.py
-cat err.log | brain think "Why?" --stdin-context
-brain think "hi" --provider opencode_go --model qwen3.7-max --raw
+exobrain think "How does async/await work?"
+exobrain think "Explain" --context-file code.py
+cat err.log | exobrain think "Why?" --stdin-context
+exobrain think "hi" --provider opencode_go --model qwen3.7-max --raw
 ```
 
 Output is the model's reply to stdout. Use `--json` for structured, `--stats` for token counts on stderr.
 
 ## Custom providers
 
-Add `[providers.<name>]` to `~/.config/exocortex/config.toml`:
+Add `[providers.<name>]` to `~/.config/exobrain/config.toml`:
 
 ```toml
 [providers.opencode_go]
@@ -70,7 +80,7 @@ default_model = "qwen3.7-max"
 ```
 
 Then set the key: `export OPENCODE_GO_API_KEY="sk-..."` and use:
-`brain think "hi" --provider opencode_go --model qwen3.7-max`.
+`exobrain think "hi" --provider opencode_go --model qwen3.7-max`.
 
 Adapter type → API format:
 - `openai-compatible` → OpenAI `/chat/completions` (uses `openai` SDK)
@@ -82,7 +92,7 @@ Adapter type → API format:
 |---|---|
 | `--provider` / `-P` | Provider name (built-in: `openrouter`) |
 | `--model` / `-m` | Model ID, scoped to provider (no `provider/model` syntax) |
-| `--profile` / `-p` | Reasoning profile (see `brain profiles`) |
+| `--profile` / `-p` | Reasoning profile (see `exobrain profiles`) |
 | `--depth` / `-d` | `quick` \| `normal` (default) \| `deep` \| `exhaustive` |
 | `--context` / `-c` | Inline context string |
 | `--context-file` / `-f` | Path to context file |
@@ -99,34 +109,34 @@ Adapter type → API format:
 
 | Command | Purpose |
 |---|---|
-| `brain` | Quickstart text |
-| `brain init` | First-time setup wizard |
-| `brain status` | Show config + key source + provider list, optional ping |
-| `brain providers` | Table of all providers (built-in + custom) |
-| `brain config` | Show `[defaults]` from config.toml |
-| `brain config-set KEY VAL` | Set `provider`, `model`, or `timeout` |
-| `brain think PROMPT` | Run prompt through model |
-| `brain plan [done\|block REASON]` | Manage structured plan |
-| `brain key` | Show key location |
-| `brain key-set KEY` | Save key to `~/.hermes/profiles/<active>/.env` |
-| `brain profiles` | List profiles |
-| `brain profile-add NAME --prompt PROMPT [--depth D] [--temp T]` | Add profile |
-| `brain profile-remove NAME` | Remove profile |
-| `brain profile-show NAME` | Show profile details |
+| `exobrain` | Quickstart text |
+| `exobrain init` | First-time setup wizard |
+| `exobrain status` | Show config + key source + provider list, optional ping |
+| `exobrain providers` | Table of all providers (built-in + custom) |
+| `exobrain config` | Show `[defaults]` from config.toml |
+| `exobrain config-set KEY VAL` | Set `provider`, `model`, or `timeout` |
+| `exobrain think PROMPT` | Run prompt through model |
+| `exobrain plan [done\|block REASON]` | Manage structured plan |
+| `exobrain key` | Show key location |
+| `exobrain key-set KEY` | Save key to `~/.hermes/profiles/<active>/.env` |
+| `exobrain profiles` | List profiles |
+| `exobrain profile-add NAME --prompt PROMPT [--depth D] [--temp T]` | Add profile |
+| `exobrain profile-remove NAME` | Remove profile |
+| `exobrain profile-show NAME` | Show profile details |
 
 ## Files & paths
 
 | Path | Purpose |
 |---|---|
-| `~/.config/exocortex/config.toml` | User config (defaults + custom providers) |
-| `~/.hermes/profiles/<active>/.env` | API keys (sourced by `brain` wrapper) |
+| `~/.config/exobrain/config.toml` | User config (defaults + custom providers) |
+| `~/.hermes/profiles/<active>/.env` | API keys (sourced by `exobrain` wrapper) |
 | `~/.hermes/.env` | Global API keys (fallback) |
-| `~/.local/bin/exocortex` | CLI binary (after `uv tool install`) |
+| `~/.local/bin/exobrain` | CLI binary (after `uv tool install`) |
 
 ## API key resolution order
 
 1. Env var `<api_key_env>` from config.toml
-2. Generic `EXOCORTEX_API_KEY` env var
+2. Generic `EXOBRAIN_API_KEY` env var
 3. `~/.hermes/profiles/<active>/.env` (parsed)
 4. `~/.hermes/.env` (parsed)
 5. For OpenRouter: also checks `OPENROUTER_API_KEY`
@@ -135,7 +145,7 @@ Adapter type → API format:
 ## Python API
 
 ```python
-from exocortex import client
+from exobrain import client
 
 # High-level
 text = client.call_and_print(
@@ -147,7 +157,7 @@ text = client.call_and_print(
 )
 
 # Low-level
-from exocortex.provider import complete
+from exobrain.provider import complete
 text, stats = complete(
     messages=[{"role": "user", "content": "Hello"}],
     model="qwen3.7-max",
@@ -162,12 +172,12 @@ print(text, stats.prompt_tokens, stats.completion_tokens)
 
 | Error | Cause | Fix |
 |---|---|---|
-| `OPENROUTER_API_KEY not found` | Key not in env or .env | `export OPENROUTER_API_KEY=...` or `brain init` |
-| `Request timeout` | Model slow + low timeout | `brain config-set timeout 300` |
+| `OPENROUTER_API_KEY not found` | Key not in env or .env | `export OPENROUTER_API_KEY=...` or `exobrain init` |
+| `Request timeout` | Model slow + low timeout | `exobrain config-set timeout 300` |
 | `Model not supported for format oa-compat` | Used wrong adapter type | Set `type = "anthropic-compatible"` for Anthropic-style endpoints |
 | `Invalid body format` | Provider expects fields CLI didn't send | Check `type` matches the provider's actual API |
-| `Unknown provider` | Provider not in config | `brain providers` to see available; add custom in config.toml |
-| `brain: command not found` | PATH missing `~/.local/bin` | Add `export PATH="$HOME/.local/bin:$PATH"` to shell rc |
+| `Unknown provider` | Provider not in config | `exobrain providers` to see available; add custom in config.toml |
+| `exobrain: command not found` | PATH missing `~/.local/bin` | Add `export PATH="$HOME/.local/bin:$PATH"` to shell rc |
 
 ## Exit codes
 
@@ -175,17 +185,17 @@ print(text, stats.prompt_tokens, stats.completion_tokens)
 
 ## Backward compat
 
-`brain` = `exocortex` (alias). The `brain` wrapper script at `~/.local/bin/brain` sources the profile `.env` before calling `exocortex`, so you don't need to `export` keys in every shell.
+`brain` = `exobrain` (alias). The `brain` wrapper script at `~/.local/bin/brain` sources the profile `.env` before calling `exobrain`, so you don't need to `export` keys in every shell.
 
 ## Source / docs
 
-- Repo: https://github.com/sl-build/exocortex
-- PyPI: https://pypi.org/project/exocortex/
-- Plugin (Hermes): https://github.com/sl-build/exocortex/tree/main/plugin
+- Repo: https://github.com/sl-build/exobrain
+- PyPI: https://pypi.org/project/exobrain-cli/
+- Plugin (Hermes): https://github.com/sl-build/exobrain/tree/main/plugin
 
 ## MCP integration
 
-Exocortex exposes itself as MCP tools for Hermes. Tool IDs: `brain_think`, `brain_plan_done`, `brain_plan_block`. Install the plugin: `pip install exocortex hermes-exocortex`.
+ExoBrain exposes itself as MCP tools for Hermes. Tool IDs: `brain_think`, `brain_plan_done`, `brain_plan_block`. Install the plugin: `pip install exobrain hermes-exobrain`.
 
 ## License
 

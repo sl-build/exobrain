@@ -1,4 +1,4 @@
-"""Exocortex CLI — Context injection for think command."""
+"""ExoBrain CLI — Context injection for think command."""
 
 from __future__ import annotations
 

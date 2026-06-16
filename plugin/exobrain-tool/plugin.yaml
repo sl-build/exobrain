@@ -1,6 +1,6 @@
-name: brain-tool
-version: 0.3.0
-description: Brain CLI reasoning engine — think, plan, gate
+name: exobrain-tool
+version: 0.2.5
+description: ExoBrain CLI reasoning engine — think, plan, gate
 provides_tools:
   - brain_think
   - brain_plan_done

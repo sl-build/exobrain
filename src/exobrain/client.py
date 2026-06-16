@@ -1,4 +1,4 @@
-"""Exocortex CLI — OpenAI-compatible API client with lazy imports."""
+"""ExoBrain CLI — OpenAI-compatible API client with lazy imports."""
 
 from __future__ import annotations
 

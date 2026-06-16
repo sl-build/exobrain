@@ -8,14 +8,14 @@ from unittest.mock import patch
 
 import pytest
 
-PLUGIN_DIR = Path(__file__).resolve().parent.parent / "plugin" / "brain-tool"
+PLUGIN_DIR = Path(__file__).resolve().parent.parent / "plugin" / "exobrain-tool"
 
 
 def _import_plugin():
-    """Load brain_tool plugin via importlib (dir name has hyphen)."""
+    """Load exobrain_tool plugin via importlib (dir name has hyphen)."""
     import importlib.util
 
-    mod_name = "brain_tool_test"
+    mod_name = "exobrain_tool_test"
     schemas_name = f"{mod_name}.schemas"
 
     schemas_spec = importlib.util.spec_from_file_location(schemas_name, PLUGIN_DIR / "schemas.py")

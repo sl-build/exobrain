@@ -1,4 +1,4 @@
-"""Exocortex CLI — Command handlers (think, plan, key)."""
+"""ExoBrain CLI — Command handlers (think, plan, key)."""
 
 from __future__ import annotations
 
@@ -190,8 +190,8 @@ def cmd_key() -> None:
     config = load_config()
     source = find_key_source(config["provider"])
     if source is None:
-        print("No key found. Use: exocortex key-set <key_value>")
-        print('Or set interactively: exocortex think "hello"')
+        print("No key found. Use: exobrain key-set <key_value>")
+        print('Or set interactively: exobrain think "hello"')
         print(f"Or edit: {PROFILE_ENV}")
         return
 
@@ -302,7 +302,7 @@ def cmd_providers() -> None:
     else:
         print()
         print("No custom providers configured.")
-        print("Use 'brain init' to add one.")
+        print("Use 'exobrain init' to add one.")
 
 
 def cmd_status() -> None:
@@ -356,12 +356,12 @@ def cmd_status() -> None:
             print(f"✓ Provider responded: {response.strip()[:50]}")
         except Exception as e:
             print(f"✗ Connection failed: {e}")
-            print("  Check your API key with: brain key")
+            print("  Check your API key with: exobrain key")
 
 
 def cmd_init() -> None:
     """Interactive setup wizard for first-time users."""
-    print("Exocortex CLI — First-time setup")
+    print("ExoBrain CLI — First-time setup")
     print("================================")
     print()
 
@@ -491,7 +491,7 @@ def cmd_init() -> None:
             model=chosen_model,
             max_tokens=10,
         )
-        print(f"✓ Setup complete. Try: brain think \"hello\"")
+        print(f"✓ Setup complete. Try: exobrain think \"hello\"")
     except Exception as e:
         print(f"✗ Connection test failed: {e}")
-        print("  Check your API key with: brain key")
+        print("  Check your API key with: exobrain key")

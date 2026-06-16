@@ -1,4 +1,4 @@
-"""Exocortex CLI — Main entry point with argparse."""
+"""ExoBrain CLI — Main entry point with argparse."""
 
 from __future__ import annotations
 
@@ -43,10 +43,10 @@ DEFAULT_MAX_TOKENS = 16384
 def build_parser() -> argparse.ArgumentParser:
     """Build the argument parser."""
     parser = argparse.ArgumentParser(
-        prog="exocortex",
-        description="Exocortex CLI — Reasoning engine",
+        prog="exobrain",
+        description="ExoBrain CLI — Reasoning engine",
     )
-    parser.add_argument("--version", action="version", version=f"exocortex {__version__}")
+    parser.add_argument("--version", action="version", version=f"exobrain {__version__}")
     parser.add_argument("--session-id", default="", help="Session ID for plan isolation")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -64,7 +64,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--profile",
         "-p",
         choices=get_valid_profile_names(),
-        help="Reasoning profile (see: brain profiles)",
+        help="Reasoning profile (see: exobrain profiles)",
     )
     think_parser.add_argument("--context", "-c", help="Inline context to include")
     think_parser.add_argument("--context-file", "-f", help="File with context to include")
@@ -183,18 +183,18 @@ def main(argv: list[str] | None = None) -> int:
 
     # No command given — friendly quickstart
     if not args.command:
-        print("Exocortex CLI v" + __version__ + " — Reasoning engine")
+        print("ExoBrain CLI v" + __version__ + " — Reasoning engine")
         print()
-        print("First time? Run:  brain init")
+        print("First time? Run:  exobrain init")
         print()
         print("Common commands:")
-        print('  brain think "your question"     ask the AI')
-        print("  brain status                    show config + health")
-        print("  brain providers                 list all providers")
-        print("  brain config                    show current config")
-        print("  brain key                       show API key location")
+        print('  exobrain think "your question"     ask the AI')
+        print("  exobrain status                    show config + health")
+        print("  exobrain providers                 list all providers")
+        print("  exobrain config                    show current config")
+        print("  exobrain key                       show API key location")
         print()
-        print("Full help: brain --help")
+        print("Full help: exobrain --help")
         return SUCCESS
 
     try:

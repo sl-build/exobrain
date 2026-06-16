@@ -1,4 +1,4 @@
-"""Exocortex CLI — Usage statistics and cost estimation."""
+"""ExoBrain CLI — Usage statistics and cost estimation."""
 
 from __future__ import annotations
 

@@ -5,11 +5,11 @@ from __future__ import annotations
 import sys
 from io import StringIO
 from unittest.mock import patch
-from exocortex.commands import cmd_init, cmd_providers, cmd_status
+from exobrain.commands import cmd_init, cmd_providers, cmd_status
 import pytest
 
-from exocortex.commands import cmd_providers, cmd_status
-from exocortex.cli import main
+from exobrain.commands import cmd_providers, cmd_status
+from exobrain.cli import main
 
 
 class TestProviders:
@@ -107,7 +107,7 @@ class TestInit:
         """Init with openrouter choice (option 1)."""
         inputs = iter(["1", "sk-test-key-123", "openai/gpt-4o"])
         with patch("builtins.input", side_effect=lambda *a: next(inputs)):
-            with patch("exocortex.commands.call_and_print", return_value="OK"):
+            with patch("exobrain.commands.call_and_print", return_value="OK"):
                 cmd_init()
         out = capsys.readouterr().out
         assert "Setup complete" in out
@@ -143,26 +143,26 @@ class TestInit:
         out = capsys.readouterr().out
         assert "Invalid choice" in out
 class TestNoArgQuickstart:
-    """Tests for no-arg brain command."""
+    """Tests for no-arg exobrain command."""
 
     def test_no_args_shows_quickstart(self, capsys):
-        """brain with no args shows friendly quickstart."""
+        """exobrain with no args shows friendly quickstart."""
         ret = main([])
         out = capsys.readouterr().out
         assert ret == 0
-        assert "brain init" in out
-        assert "brain think" in out
+        assert "exobrain init" in out
+        assert "exobrain think" in out
         assert "Common commands" in out
 
     def test_no_args_returns_success(self):
-        """brain with no args returns exit code 0."""
+        """exobrain with no args returns exit code 0."""
         ret = main([])
         assert ret == 0
 
     def test_version_flag(self, capsys):
-        """brain --version shows version string."""
+        """exobrain --version shows version string."""
         with pytest.raises(SystemExit) as exc_info:
             main(["--version"])
         assert exc_info.value.code == 0
         out = capsys.readouterr().out
-        assert "0.2.5" in out
+        assert "0.3.0" in out

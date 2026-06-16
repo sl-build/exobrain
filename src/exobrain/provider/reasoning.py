@@ -1,4 +1,4 @@
-"""Exocortex CLI — Anthropic SDK adapter for reasoning models.
+"""ExoBrain CLI — Anthropic SDK adapter for reasoning models.
 
 Uses the official anthropic SDK which handles thinking blocks, streaming,
 and proper error categorization. Works with any Anthropic Messages API

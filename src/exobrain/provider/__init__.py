@@ -1,4 +1,4 @@
-"""Exocortex CLI — Provider adapter layer.
+"""ExoBrain CLI — Provider adapter layer.
 
 Registry and factory for routing model+provider pairs to the correct adapter.
 """

@@ -1,8 +1,8 @@
-"""Tests for exocortex.config module."""
+"""Tests for exobrain.config module."""
 
 import pytest
 
-from exocortex.config import load_config, save_config
+from exobrain.config import load_config, save_config
 
 
 class TestConfig:
@@ -29,11 +29,11 @@ class TestConfig:
         """Regression: save_config() must not destroy [providers.*] sections.
 
         Bug: previously, save_config() wrote only [defaults] and dropped the
-        provider_config dict, so any `brain config-set` after a custom
+        provider_config dict, so any `exobrain config-set` after a custom
         provider was defined would silently remove the provider and break
-        brain think for that provider.
+        exobrain think for that provider.
         """
-        from exocortex.config import save_provider_config
+        from exobrain.config import save_provider_config
 
         # Seed a custom provider
         save_provider_config(
@@ -61,7 +61,7 @@ class TestConfig:
 
     def test_save_round_trip_with_provider_list(self, mock_config_dir):
         """Regression: lists in [providers.*] survive save_config() round-trip."""
-        from exocortex.config import save_provider_config
+        from exobrain.config import save_provider_config
 
         save_provider_config(
             name="opencode_go",
@@ -73,7 +73,7 @@ class TestConfig:
         # Manually inject a list field (save_provider_config doesn't take models list)
         import tomllib
         from pathlib import Path
-        from exocortex.config import CONFIG_FILE
+        from exobrain.config import CONFIG_FILE
 
         # Re-read, add models list, re-write via save_config (no-op key update)
         save_config("timeout", 180)
