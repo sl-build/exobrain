@@ -351,7 +351,7 @@ def cmd_status() -> None:
                 prompt="Reply with the word OK and nothing else.",
                 provider=provider,
                 model=model or None,
-                max_tokens=10,
+                max_tokens=128,
             )
             print(f"✓ Provider responded: {response.strip()[:50]}")
         except Exception as e:
@@ -489,7 +489,7 @@ def cmd_init() -> None:
             prompt="Reply with the word OK and nothing else.",
             provider=chosen_provider,
             model=chosen_model,
-            max_tokens=10,
+            max_tokens=128,
         )
         print(f"✓ Setup complete. Try: exobrain think \"hello\"")
     except Exception as e:
