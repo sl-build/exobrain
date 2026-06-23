@@ -69,7 +69,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 
 # 2. Optional: set default model and timeout
 exobrain config-set model openai/gpt-4o
-exobrain config-set timeout 300   # seconds, default 180
+exobrain config-set timeout 600   # seconds, default 350
 
 # 3. Verify
 exobrain status
@@ -138,7 +138,7 @@ Config file: `~/.config/exobrain/config.toml`
 [defaults]
 provider = "openrouter"          # built-in default
 model = "openai/gpt-4o"          # optional; falls back to provider default
-timeout = 180                    # seconds (default: 180)
+timeout = 350                    # seconds (default: 350)
 
 [providers.my_provider]
 type = "openai-compatible"       # or "anthropic-compatible"
@@ -194,7 +194,7 @@ For OpenRouter specifically, the key `OPENROUTER_API_KEY` is also accepted at st
 | Problem | Fix |
 |---|---|
 | `OPENROUTER_API_KEY not found` | Set the env var, or run `exobrain init` |
-| `Connection timeout` | Increase timeout: `exobrain config-set timeout 300` |
+| `Connection timeout` | Increase timeout: `exobrain config-set timeout 600` |
 | `Model not supported for format` | Wrong adapter type — set `type = "anthropic-compatible"` or `"openai-compatible"` correctly |
 | Custom provider not in list | Re-run `exobrain providers`; check `[providers.<name>]` in `~/.config/exobrain/config.toml` |
 | `exobrain` not found after install | `uv tool install` puts it in `~/.local/bin/` — add to `PATH` or use full path |

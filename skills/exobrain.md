@@ -88,6 +88,6 @@ Then: `exobrain config-set provider my_api`
 
 1. **Config is persistent.** `exobrain config-set provider X` affects all future calls. Use `--provider` for one-offs.
 2. **Key must exist.** `exobrain key` to check. Missing → `exobrain init` or `exobrain key-set`.
-3. **Timeout 180s default.** Deep models may need more: `exobrain config-set timeout 300`.
+3. **Timeout 350s default.** Deep reasoning with complex prompts can take 80–200s. Increase further: `exobrain config-set timeout 600`.
 4. **`--raw` skips system prompt.** Faster, no profile applied.
 # ExoBrain CLI

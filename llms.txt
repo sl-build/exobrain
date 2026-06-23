@@ -47,7 +47,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 
 # 2. Optional: set default model
 exobrain config-set model openai/gpt-4o
-exobrain config-set timeout 300   # seconds, default 180
+exobrain config-set timeout 600   # seconds, default 350
 
 # 3. Verify
 exobrain status
@@ -151,7 +151,7 @@ Adapter type → API format:
 | Error | Cause | Fix |
 |---|---|---|
 | `OPENROUTER_API_KEY not found` | Key not in env or .env | `export OPENROUTER_API_KEY=...` or `exobrain init` |
-| `Request timeout` | Model slow + low timeout | `exobrain config-set timeout 300` |
+| `Request timeout` | Model slow + low timeout | `exobrain config-set timeout 600` |
 | `Model not supported for format oa-compat` | Used wrong adapter type | Set `type = "anthropic-compatible"` for Anthropic-style endpoints |
 | `Invalid body format` | Provider expects fields CLI didn't send | Check `type` matches the provider's actual API |
 | `Unknown provider` | Provider not in config | `exobrain providers` to see available; add custom in config.toml |
