@@ -6,7 +6,7 @@
 
 **Cause:** The GLM-5.2 reasoning model generates extensive internal `reasoning_content` (chain-of-thought) before producing visible output. With `--depth deep` (`max_tokens=16384`), complex prompts can produce 2000–3000+ completion tokens, taking 80–200s server-side.
 
-**Fix:** Default timeout is now 350s (as of v0.2.5). If still not enough:
+**Fix:** Default timeout is now 350s (as of v0.2.6). If still not enough:
 
 ```bash
 exobrain config-set timeout 600

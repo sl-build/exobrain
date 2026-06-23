@@ -1,4 +1,4 @@
-# ExoBrain CLI v0.2.5 — Reasoning Engine
+# ExoBrain CLI v0.2.6 — Reasoning Engine
 
 > **Agents:** see [`llms.txt`](llms.txt) for machine-readable setup instructions.
 

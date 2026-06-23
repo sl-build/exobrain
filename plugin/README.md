@@ -1,6 +1,6 @@
 # ExoBrain Hermes Plugin (optional, experimental)
 
-> **Version:** matches exobrain (currently v0.2.5)
+> **Version:** matches exobrain (currently v0.2.6)
 > **Not included in the exobrain pip package.** Installed separately via Hermes Agent.
 
 ## Installation
@@ -25,5 +25,5 @@ Gate protects against cyclic calls. It blocks `exobrain think` if exobrain itsel
 
 ## Dependencies
 
-- exobrain CLI v0.2.5+ (`pip install exobrain-cli`)
+- exobrain CLI v0.2.6+ (`pip install exobrain-cli`)
 - Hermes Agent

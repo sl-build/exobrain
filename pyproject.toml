@@ -1,6 +1,6 @@
 [project]
 name = "exobrain-cli"
-version = "0.2.5"
+version = "0.2.6"
 description = "ExoBrain CLI — reasoning engine"
 requires-python = ">=3.11"
 dependencies = [
