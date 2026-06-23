@@ -18,10 +18,10 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev
       - name: Ruff lint
-        run: .venv/bin/ruff check src/
+        run: uv run ruff check src/
       - name: Ruff format
-        run: .venv/bin/ruff format --check src/
+        run: uv run ruff format --check src/
       - name: Pyright
-        run: .venv/bin/pyright src/
+        run: uv run pyright src/
       - name: Tests
-        run: .venv/bin/pytest tests/ -x -q
+        run: uv run pytest tests/ -x -q

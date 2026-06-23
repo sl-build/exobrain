@@ -45,6 +45,8 @@ build-backend = "hatchling.build"
 dev = [
     "httpx>=0.28.1",
     "pytest>=9.0.3",
+    "ruff>=0.11.0",
+    "pyright>=1.1.400",
 ]
 
 [tool.hatch.build.targets.wheel]
