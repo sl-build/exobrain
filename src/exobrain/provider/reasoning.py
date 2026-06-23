@@ -29,8 +29,8 @@ class ReasoningAdapter:
         if self._base_url.endswith("/v1"):
             self._base_url = self._base_url[:-3]
         self._api_key = api_key
-        # Match CLI default timeout (config default is 180s).
-        self._timeout = timeout or 180.0
+        # Match CLI default timeout (config default is 350s).
+        self._timeout = timeout or 350.0
 
     def _build_client(self, timeout: float | None):
         """Lazy import + build anthropic client with given timeout."""

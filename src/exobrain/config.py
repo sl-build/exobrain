@@ -12,7 +12,7 @@ def _ensure_config() -> None:
     """Ensure config directory and file exist."""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     if not CONFIG_FILE.exists():
-        CONFIG_FILE.write_text('[defaults]\nprovider = "openrouter"\nmodel = ""\ntimeout = 180\nmax_iterations = 3\n')
+        CONFIG_FILE.write_text('[defaults]\nprovider = "openrouter"\nmodel = ""\ntimeout = 350\nmax_iterations = 3\n')
 
 
 def load_config() -> dict:
@@ -26,7 +26,7 @@ def load_config() -> dict:
     result: dict = {
         "provider": defaults.get("provider", "openrouter"),
         "model": defaults.get("model", ""),
-        "timeout": defaults.get("timeout", 180),
+        "timeout": defaults.get("timeout", 350),
         "max_iterations": defaults.get("max_iterations", 3),
     }
 

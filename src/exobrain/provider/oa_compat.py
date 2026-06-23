@@ -17,7 +17,7 @@ class OACompatAdapter:
         self._base_url = base_url
         self._api_key = api_key
         # OpenAI SDK defaults to 60s when timeout=None; enforce CLI default.
-        self._timeout = timeout or 180.0
+        self._timeout = timeout or 350.0
 
     def complete(
         self,

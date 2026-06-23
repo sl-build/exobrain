@@ -81,7 +81,7 @@ def _call_api(
     try:
         timeout_val = float(timeout_str)
     except (ValueError, TypeError):
-        timeout_val = 180.0
+        timeout_val = 350.0
 
     return complete(
         messages=messages,
